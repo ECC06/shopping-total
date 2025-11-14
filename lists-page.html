@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Your lists</title>
+        <link rel="stylesheet" href="styles.css" />
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+        <script defer src="./lists-page.js"></script>
+    </head>
+    <body>
+        <header class="display-none"><h1>Your lists</h1></header>
+
+        <dialog>
+            <form method="get" action="">
+                <img src="" alt="list with a green background" />
+
+                <label for="list-name-input">Name your list!</label>
+                <input
+                    type="text"
+                    name="list-name-input"
+                    id="list-name-input"
+                    required
+                />
+
+                <button type="submit" class="add-item-btn">Add item</button>
+                <button id="cancel-create-list-btn">Cancel</button>
+            </form>
+        </dialog>
+
+        <main>
+            <article id="no-lists-cont">
+                <img src="" alt="woman with an empty shopping cart" />
+                <h2>No lists yet!</h2>
+                <button id="create-list-btn">Create a list</button>
+            </article>
+
+            <div id="lists-and-add-button-cont" class="display-none">
+                <button>+</button>
+                <div id="lists-cont">
+                    <article id="list-cont">
+                        <div>
+                            <h2 id="list-name"></h2>
+                            <p id="list-created"></p>
+                            <p></p>
+                        </div>
+
+                        <div>
+                            <button>Open</button>
+                            <button>Delete</button>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

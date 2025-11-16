@@ -1,9 +1,28 @@
-const listObj = {};
+const arrOfLists = [];
 
 const createListBtn = document.querySelector("#create-list-btn");
 const cancelCreateListBtn = document.querySelector("#cancel-create-list-btn");
 const nameListForm = document.querySelector("form");
 const nameListDialogue = document.querySelector("dialog");
+const addListBtn = document.querySelector("#add-list-btn");
+const listFromLocalStorage = () => JSON.parse(localStorage.getItem("lists"));
+const listsCont = document.querySelector("#lists-cont");
+
+const localStorageEmpty = () => {
+	if (!localStorage.getItem("lists")) {
+		return true;
+	} else {
+		return false;
+	}
+};
+
+// Code to execute after the DOM has been parsed
+document.addEventListener("DOMContentLoaded", () => {
+	if (!localStorageEmpty()) {
+		createListItems();
+		displayList();
+	}
+});
 
 createListBtn.addEventListener("click", () => {
 	nameListDialogue.showModal();
@@ -13,17 +32,21 @@ cancelCreateListBtn.addEventListener("click", () => {
 	nameListDialogue.close();
 });
 
-//set the name of the first list when the user creates it
+//create the first list when the user submits the form
 nameListForm.addEventListener("submit", (e) => {
-	event.preventDefault();
-
-	debugger;
-	storeListInLocalStorage(e.target);
-	populateList();
-	displayCreatedList();
+	e.preventDefault();
+	storeAndDisplayInput();
 });
 
-function storeListInLocalStorage(form) {
+addListBtn.addEventListener("click", (e) => {
+	nameListDialogue.showModal();
+});
+
+//stores the user's input in local storage and then displays it to the user
+function storeAndDisplayInput() {
+	//object that will contain info about each list item
+	const listObj = {};
+
 	//store last modified
 	const lastModified = null; //list hasn't been modified yet
 	listObj["lastModified"] = lastModified;
@@ -33,7 +56,7 @@ function storeListInLocalStorage(form) {
 	listObj["id"] = listId;
 
 	//store list name
-	const userInput = form.elements["list-name-input"].value;
+	const userInput = nameListForm.elements["list-name-input"].value;
 	listObj["userInput"] = userInput;
 
 	//store date of creation
@@ -44,20 +67,61 @@ function storeListInLocalStorage(form) {
 	const dateOfCreation = `${month} ${day} ${year}`;
 	listObj["dateOfCreation"] = dateOfCreation;
 
-	//store list name and date of creation in local storage
-	localStorage.setItem("listObj", JSON.stringify(listObj));
+	//returns true if the name the user types in has been stored by them previously
+	function userDuplicatedTitle() {
+		if (listsCont.children.length > 0) {
+			for (const obj of listFromLocalStorage()) {
+				if (obj.userInput === userInput) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	if (userDuplicatedTitle()) {
+		alert(`You already have a list named ${userInput}!`);
+		return;
+	} else {
+		arrOfLists.push(listObj);
+		localStorage.setItem("lists", JSON.stringify(arrOfLists));
+		createListItems();
+		displayList();
+	}
 }
 
-function populateList() {
-	const listNameElem = document.querySelector("#list-name");
-	const listCreatedElem = document.querySelector("#list-created");
-	const listObjFromLocalStorage = JSON.parse(localStorage.getItem("listObj"));
+//iterates over the list of objects from local storage and converts them to HTML
+function createListItems() {
+	if (!localStorageEmpty()) {
+		listFromLocalStorage().forEach((listObj) => {
+			const listCont = document.querySelector(".list-cont");
 
-	listNameElem.innerText = listObjFromLocalStorage.userInput;
-	listCreatedElem.innerText = listObjFromLocalStorage.dateOfCreation;
+			if (listsCont.children.length === 0) {
+				listsCont.appendChild(listCont);
+				setNames();
+				listCont.classList.remove("display-none");
+			} else {
+				const cloned = listCont.cloneNode(true);
+				listsCont.appendChild(cloned); //add a cloned element to the container of lists
+				setNames();
+			}
+
+			function setNames() {
+				const listOfNames = document.querySelectorAll("#list-name");
+
+				listOfNames[listOfNames.length - 1].innerText = listObj.userInput;
+
+				const listOfDatesCreated = document.querySelectorAll("#list-created");
+
+				listOfDatesCreated[listOfDatesCreated.length - 1].innerText =
+					listObj.dateOfCreation;
+			}
+		});
+	}
 }
 
-function displayCreatedList() {
+function displayList() {
 	const listsAndAddButtonCont = document.querySelector(
 		"#lists-and-add-button-cont",
 	);

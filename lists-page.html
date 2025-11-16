@@ -9,13 +9,18 @@
         <script defer src="./lists-page.js"></script>
     </head>
     <body>
-        <header class="display-none"><h1>Your lists</h1></header>
+        <header class="display-none">
+            <h1>Your lists</h1>
+        </header>
 
         <dialog>
             <form method="get" action="">
                 <img src="" alt="list with a green background" />
+                <br />
 
                 <label for="list-name-input">Name your list!</label>
+                <br />
+
                 <input
                     type="text"
                     name="list-name-input"
@@ -24,9 +29,24 @@
                 />
 
                 <button type="submit" class="add-item-btn">Add item</button>
-                <button id="cancel-create-list-btn">Cancel</button>
+                <button type="button" id="cancel-create-list-btn">
+                    Cancel
+                </button>
             </form>
         </dialog>
+
+        <article class="list-cont display-none">
+            <div>
+                <h2 id="list-name"></h2>
+                <p id="list-created"></p>
+                <p></p>
+            </div>
+
+            <div>
+                <button>Open</button>
+                <button>Delete</button>
+            </div>
+        </article>
 
         <main>
             <article id="no-lists-cont">
@@ -36,21 +56,8 @@
             </article>
 
             <div id="lists-and-add-button-cont" class="display-none">
-                <button>+</button>
-                <div id="lists-cont">
-                    <article id="list-cont">
-                        <div>
-                            <h2 id="list-name"></h2>
-                            <p id="list-created"></p>
-                            <p></p>
-                        </div>
-
-                        <div>
-                            <button>Open</button>
-                            <button>Delete</button>
-                        </div>
-                    </article>
-                </div>
+                <button id="add-list-btn">+</button>
+                <div id="lists-cont"></div>
             </div>
         </main>
     </body>

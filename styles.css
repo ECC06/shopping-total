@@ -10,3 +10,7 @@ header {
 	margin-top: 40px;
 	border: 2px solid red;
 }
+
+.list-cont {
+	list-style-type: none;
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Your lists</title>
+        <link rel="stylesheet" href="./styles/list-page-styles.css" />
+        <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+        <script type="module" src="./javascript/list-page.js" defer></script>
+    </head>
+
+    <header>
+        <a href="../codeForAllLists/index.html">&lt-</a>
+        <h1>[Title goes here]</h1>
+    </header>
+
+    <main>
+        <button id="add-item-btn">
+            Add an item
+            <span>+</span>
+        </button>
+
+        <ul>
+            <li>
+                <div>
+                    <input type="checkbox" id="list-item" />
+                    <label for="list-item">[Name of item]</label>
+                    <p>[Description of item]</p>
+                </div>
+
+                <div class="price-and-quantity">
+                    <p>[price of item]</p>
+
+                    <div class="quantity-control">
+                        <button>-</button>
+                        <p>[quantity]</p>
+                        <button>+</button>
+                    </div>
+                </div>
+
+                <button id="delete-btn">delete</button>
+            </li>
+        </ul>
+
+        <div id="total">Total: [total]</div>
+    </main>
+</html>

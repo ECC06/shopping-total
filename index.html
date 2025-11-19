@@ -4,9 +4,9 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Your lists</title>
-        <link rel="stylesheet" href="styles.css" />
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-        <script defer src="./lists-page.js"></script>
+        <link rel="stylesheet" href="./styles/lists-page-styles.css" />
+        <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+        <script type="module" src="./javascript/lists-page.js" defer></script>
     </head>
     <body>
         <header class="display-none">
@@ -14,7 +14,7 @@
         </header>
 
         <dialog>
-            <form method="get" action="">
+            <form id="add-item-form">
                 <img src="" alt="list with a green background" />
                 <br />
 
@@ -35,19 +35,6 @@
             </form>
         </dialog>
 
-        <li class="list-cont display-none">
-            <div>
-                <h2 id="list-name"></h2>
-                <p id="list-created"></p>
-                <p></p>
-            </div>
-
-            <div>
-                <button>Open</button>
-                <button>Delete</button>
-            </div>
-        </li>
-
         <main>
             <article id="no-lists-cont">
                 <img src="" alt="woman with an empty shopping cart" />
@@ -57,7 +44,25 @@
 
             <div id="lists-and-add-button-cont" class="display-none">
                 <button id="add-list-btn">+</button>
-                <ul id="lists-cont"></ul>
+                <ul id="lists-cont">
+                    <!-- initial list element that's empty -->
+                    <li class="list-cont display-none">
+                        <div>
+                            <h2 id="list-name"></h2>
+                            <p id="list-created"></p>
+                            <p></p>
+                        </div>
+
+                        <div>
+                            <a
+                                href="../codeForOneList/list-page.html"
+                                class="open-button"
+                                >Open</a
+                            >
+                            <button>Delete</button>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </main>
     </body>

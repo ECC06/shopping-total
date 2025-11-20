@@ -1,6 +1,16 @@
-#add-item-btn {
+#close-add-item-form,
+.item-data-input {
+	margin-bottom: 20px;
+}
+
+#no-items-cont {
+	border: 2px solid green;
+}
+
+#main-add-item-btn {
 	width: 100%;
 	text-align: start;
+	margin-top: 50px;
 }
 
 li {

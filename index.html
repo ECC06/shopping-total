@@ -7,12 +7,13 @@
         <link rel="stylesheet" href="./styles/lists-page-styles.css" />
         <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
         <script type="module" src="./javascript/lists-page.js" defer></script>
+        <script
+            type="module"
+            src="./javascript/utility-functions.js"
+            defer
+        ></script>
     </head>
     <body>
-        <header class="display-none">
-            <h1>Your lists</h1>
-        </header>
-
         <dialog id="add-list-dialog">
             <form id="add-item-form">
                 <img src="" alt="list with a green background" />
@@ -39,7 +40,6 @@
                     type="text"
                     name="new-name-input"
                     id="new-name-input"
-                    placeholder="Enter new name"
                     required
                 />
 
@@ -61,11 +61,15 @@
             </form>
         </dialog>
 
+        <header class="display-none">
+            <h1>Your lists</h1>
+        </header>
+
         <main>
             <article id="no-lists-cont">
                 <img src="" alt="woman with an empty shopping cart" />
-                <h2>No lists yet!</h2>
-                <button id="create-list-btn">Create a list</button>
+                <h2>You have no lists</h2>
+                <button id="create-list-btn">Create one!</button>
             </article>
 
             <div id="lists-and-add-button-cont" class="display-none">
@@ -83,9 +87,7 @@
 
                         <div>
                             <br />
-                            <a
-                                href="../codeForOneList/list-page.html"
-                                class="open-button"
+                            <a href="./list-page.html" class="open-button"
                                 >Open</a
                             >
                             <button class="delete-btn">Delete</button>

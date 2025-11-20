@@ -9,39 +9,93 @@
         <script type="module" src="./javascript/list-page.js" defer></script>
     </head>
 
+    <dialog id="add-items-dialog">
+        <button id="close-add-item-form">x</button>
+
+        <form id="add-items-form">
+            <br />
+
+            <label for="item-name-input">Item name</label>
+            <input
+                class="item-data-input"
+                type="text"
+                name="item-name-input"
+                id="item-name-input"
+                required
+            />
+
+            <br />
+
+            <label for="item-name-input">Description</label>
+            <input
+                class="item-data-input"
+                type="text"
+                name="item-desc-input"
+                id="item-desc-input"
+                required
+            />
+
+            <br />
+
+            <label for="item-name-input">Price (ghc)</label>
+            <input
+                class="item-data-input"
+                type="number"
+                name="item-price-input"
+                id="item-price-input"
+                required
+            />
+
+            <br />
+
+            <button type="submit" id="form-add-item-btn">Add item</button>
+            <button type="button" id="cancel-add-item-btn">Cancel</button>
+        </form>
+    </dialog>
+
     <header>
-        <a href="../codeForAllLists/index.html">&lt-</a>
+        <a href="./index.html">&lt-</a>
         <h1>[Title goes here]</h1>
     </header>
 
     <main>
-        <button id="add-item-btn">
-            Add an item
-            <span>+</span>
-        </button>
+        <article id="no-items-cont">
+            <img src="" alt="An empty basket" />
+            <h2>You have no items</h2>
+            <button id="first-add-item-btn">Add some!</button>
+        </article>
 
-        <ul>
-            <li>
-                <div>
-                    <input type="checkbox" id="list-item" />
-                    <label for="list-item">[Name of item]</label>
-                    <p>[Description of item]</p>
-                </div>
+        <article id="items-and-add-btn">
+            <button id="main-add-item-btn">
+                Add an item
+                <span>+</span>
+            </button>
 
-                <div class="price-and-quantity">
-                    <p>[price of item]</p>
+            <div>
+                <ul id="items-cont">
+                    <li class="list-item">
+                        <div class="name-and-desc">
+                            <input type="checkbox" id="name" />
+                            <label for="name" id="name"></label>
+                            <p id="description"></p>
+                        </div>
 
-                    <div class="quantity-control">
-                        <button>-</button>
-                        <p>[quantity]</p>
-                        <button>+</button>
-                    </div>
-                </div>
+                        <div class="price-and-quantity">
+                            <p><span id="price"></span> ghc</p>
 
-                <button id="delete-btn">delete</button>
-            </li>
-        </ul>
+                            <div class="quantity-control">
+                                <button>-</button>
+                                <p id="quantity"></p>
+                                <button>+</button>
+                            </div>
+                        </div>
 
-        <div id="total">Total: [total]</div>
+                        <button id="delete-btn">delete</button>
+                    </li>
+                </ul>
+
+                <div id="total">Total: [total]</div>
+            </div>
+        </article>
     </main>
 </html>

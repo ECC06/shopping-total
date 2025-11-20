@@ -1,5 +1,7 @@
 //...THIS FILE CONTAINS THE MAIN LOGIC OF MANAGING USER LISTS
 
+import { updateLocalStorage } from "./shared.js";
+
 import {
 	populateListItem,
 	toggleListDisplay,
@@ -20,12 +22,11 @@ const newNameInputElem = document.querySelector("#new-name-input");
 const deleteListDialog = document.querySelector("#delete-list-dialog");
 const deleteListForm = document.querySelector("#delete-list-form");
 const cancelDeleteBtn = document.querySelector("#cancel-delete-btn");
-const confirmDeleteBtn = document.querySelector("#confirm-delete-btn");
 
 let listToUpdateName = null; //the list that was selected for updating or deleting
 let listToDelete = null; //the list that was selected for updating or deleting
 
-export const listFromLocalStorage = () =>
+export const listsArrFromLocalStorage = () =>
 	JSON.parse(localStorage.getItem("lists"));
 export const localStorageEmpty = () => !localStorage.getItem("lists");
 export const lastElemOfList = () => listsCont.lastElementChild; //gets the current last element of the list (it's changes as more and more are added)
@@ -41,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (!localStorageEmpty()) {
 		listsCont.innerHTML = "";
 
-		listFromLocalStorage().forEach((obj) => {
+		listsArrFromLocalStorage().forEach((obj) => {
 			//each iteration appends a clone of listCont so that listCont doesn't get moved every time appendChild is called
 			listsCont.appendChild(listCont.cloneNode(true));
 			populateListItem(obj);
@@ -110,7 +111,7 @@ listsCont.addEventListener("click", (e) => {
 //handles the updating of the list name
 updateListNameDialog.addEventListener("submit", (e) => {
 	e.preventDefault();
-	const storedList = listFromLocalStorage();
+	const storedList = listsArrFromLocalStorage();
 
 	if (userDuplicatedTitle(newNameInputElem.value)) {
 		alert(`You already have a list named ${newNameInputElem.value}!`);
@@ -161,7 +162,7 @@ deleteListForm.addEventListener("submit", (e) => {
 	e.preventDefault();
 
 	//filter out any list that matches the id of the one the user selected
-	const newListForLocalStorage = listFromLocalStorage().filter(
+	const newListForLocalStorage = listsArrFromLocalStorage().filter(
 		(obj) => obj.id !== Number(listToDelete.id),
 	);
 
@@ -187,12 +188,8 @@ cancelDeleteBtn.addEventListener("click", (e) => {
 
 //stores the user's input in local storage and then displays it to the user
 function storeList() {
-	//store last modified
-	const lastModified = null; //list hasn't been modified yet
-	listObj["lastModified"] = lastModified;
-
 	//store list id
-	const listId = Math.floor(Math.random() * 1000);
+	const listId = Math.floor(Math.random() * 900) + 100; //generates a number between 100 and 999 inclusive
 	listObj["id"] = listId;
 
 	//store date of creation
@@ -203,26 +200,16 @@ function storeList() {
 	const dateOfCreation = `Created: ${month} ${day} ${year}`;
 	listObj["dateOfCreation"] = dateOfCreation;
 
-	updateLocalStorage();
-
-	function updateLocalStorage() {
-		if (localStorageEmpty()) {
-			localStorage.setItem("lists", JSON.stringify([listObj]));
-		} else {
-			const arrOfLists = JSON.parse(localStorage.getItem("lists"));
-			arrOfLists.push(listObj);
-
-			localStorage.setItem("lists", JSON.stringify(arrOfLists));
-		}
-	}
+	//creates a new array in local storage if it's empty, or updates the existing array if it's not
+	updateLocalStorage("lists", listObj);
 }
 
 //adds a new item to the list container and populates it with the newly added list data (e.g the list name the user just typed in)
 function addListToHTML() {
 	const lastObjInLocalStorage =
-		listFromLocalStorage()[listFromLocalStorage().length - 1];
+		listsArrFromLocalStorage()[listsArrFromLocalStorage().length - 1];
 
-	if (listFromLocalStorage().length === 1) {
+	if (listsArrFromLocalStorage().length === 1) {
 		populateListItem(lastObjInLocalStorage); //update the newly added item with the right information
 		toggleListDisplay(); //display list container for the first time
 		addListDialog.close();

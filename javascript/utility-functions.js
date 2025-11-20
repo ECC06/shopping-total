@@ -2,7 +2,7 @@
 
 import {
 	lastElemOfList,
-	listFromLocalStorage,
+	listsArrFromLocalStorage,
 	localStorageEmpty,
 } from "./lists-page.js";
 
@@ -23,7 +23,7 @@ function toggleListDisplay() {
 //returns true if the name the user types in has been stored by them previously. otherwise, it returns false
 function userDuplicatedTitle(userInput) {
 	if (!localStorageEmpty()) {
-		for (const obj of listFromLocalStorage()) {
+		for (const obj of listsArrFromLocalStorage()) {
 			if (obj.listName === userInput) {
 				return true;
 			}
@@ -34,7 +34,7 @@ function userDuplicatedTitle(userInput) {
 }
 
 function populateListItem(listObj) {
-	lastElemOfList().id = listObj.id; //populate this single list item with the id of the single list object in local storage
+	lastElemOfList().id = listObj.id; //populate the last list item with the id of the single list object in local storage
 
 	lastElemOfList().classList.remove("display-none");
 

@@ -4,11 +4,17 @@ const nameListForm = document.querySelector("#add-item-form");
 const addListDialog = document.querySelector("#add-list-dialog");
 const addListBtn = document.querySelector("#add-list-btn");
 const listsCont = document.querySelector("#lists-cont");
+
 const updateListNameDialog = document.querySelector("#update-name-dialog");
-const changeListNameBtn = document.querySelector("#change-name-btn");
 const cancelChangeBtn = document.querySelector("#cancel-change-btn");
 const newNameInputElem = document.querySelector("#new-name-input");
-let listToUpdateName = null;
+
+const deleteListDialog = document.querySelector("#delete-list-dialog");
+const deleteListForm = document.querySelector("#delete-list-form");
+const cancelDeleteBtn = document.querySelector("#cancel-delete-btn");
+const confirmDeleteBtn = document.querySelector("#confirm-delete-btn");
+
+let selectedList = null; //the list that was selected for updating or deleting
 
 const listFromLocalStorage = () => JSON.parse(localStorage.getItem("lists"));
 const localStorageEmpty = () => !localStorage.getItem("lists");
@@ -21,17 +27,17 @@ const listObj = {};
 //!UTILITY FUNCTIONS (CALLED MULTIPLE TIMES)
 
 //hides the default page and shows the list
-function displayList() {
+function toggleListDisplay() {
 	const listsAndAddButtonCont = document.querySelector(
 		"#lists-and-add-button-cont",
 	);
 	const noListsCont = document.querySelector("#no-lists-cont");
 	const header = document.querySelector("header");
 
-	noListsCont.classList.add("display-none"); //hide default page
+	noListsCont.classList.toggle("display-none"); //hide default page
 
-	header.classList.remove("display-none"); //show header
-	listsAndAddButtonCont.classList.remove("display-none"); //show lists
+	header.classList.toggle("display-none"); //show header
+	listsAndAddButtonCont.classList.toggle("display-none"); //show lists
 	addListDialog.close();
 }
 
@@ -49,7 +55,6 @@ function userDuplicatedTitle(userInput) {
 }
 
 function populateListItem(listObj) {
-	// debugger;
 	lastElemOfList().id = listObj.id; //populate this single list item with the id of the single list object in local storage
 
 	lastElemOfList().classList.remove("display-none");
@@ -63,13 +68,9 @@ function populateListItem(listObj) {
 	dateCreatedElem.innerText = listObj.dateOfCreation;
 }
 
-//!EVENT HANDLERS AND MAIN LOGIC
+//...MAIN LOGIC
 
-//button that is shown on the "no lists yet" page
-initialCreateListBtn.addEventListener("click", () => {
-	addListDialog.showModal();
-});
-
+//!READ lists in local storage
 //if local storage is not empty, this handler fetches the array of lists from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", () => {
 	const listCont = document.querySelector(".list-cont");
@@ -81,12 +82,19 @@ document.addEventListener("DOMContentLoaded", () => {
 			//each iteration appends a clone of listCont so that listCont doesn't get moved every time appendChild is called
 			listsCont.appendChild(listCont.cloneNode(true));
 			populateListItem(obj);
-			displayList();
 		});
+
+		toggleListDisplay();
 	}
 });
 
-//when submitted, a new list created
+//!CREATE NEW LIST
+
+//button that is shown on the "no lists yet" page
+initialCreateListBtn.addEventListener("click", () => {
+	addListDialog.showModal();
+});
+
 nameListForm.addEventListener("submit", (e) => {
 	e.preventDefault();
 
@@ -118,14 +126,16 @@ cancelCreateListBtn.addEventListener("click", () => {
 	addListDialog.close();
 });
 
+//!UPDATE LIST NAME
+//handles updating the name of lists
 listsCont.addEventListener("click", (e) => {
 	//?using event delegation instead of document.querySelectorAll because this button may not exist yet
 
 	if (e.target.className === "edit-btn") {
-		listToUpdateName = e.target.parentElement; //storing the parent list element of the edit button
+		selectedList = e.target.parentElement; //storing the parent list element of the edit button
 
 		//populates the input box with the list title that's already there
-		const divContainingListName = listToUpdateName.children[0];
+		const divContainingListName = selectedList.children[0];
 		newNameInputElem.value =
 			divContainingListName.children["list-name"].innerText;
 
@@ -144,7 +154,7 @@ updateListNameDialog.addEventListener("submit", (e) => {
 
 	//finds the right list obj in local storage and updates it with the user's input
 	for (const obj of storedList) {
-		if (obj.id === Number(listToUpdateName.id)) {
+		if (obj.id === Number(selectedList.id)) {
 			//update the object
 			obj.listName = newNameInputElem.value;
 			break;
@@ -154,16 +164,56 @@ updateListNameDialog.addEventListener("submit", (e) => {
 	localStorage.setItem("lists", JSON.stringify(storedList));
 
 	//updates the title of the list with the user's input
-	const divContainingListName = listToUpdateName.children[0];
+	const divContainingListName = selectedList.children[0];
 	const listNameElem = divContainingListName.children["list-name"];
 	listNameElem.innerText = newNameInputElem.value;
 
 	newNameInputElem.value = "";
+	selectedList = null; //reset selected list to null so that another list can be stored inside in the future
 	updateListNameDialog.close();
 });
 
 cancelChangeBtn.addEventListener("click", (e) => {
 	updateListNameDialog.close();
+});
+
+//!DELETE A LIST
+listsCont.addEventListener("click", (e) => {
+	//?using event delegation instead of document.querySelectorAll because this button may not exist yet in the DOM
+
+	selectedList = e.target.parentElement.parentElement;
+
+	if (e.target.className === "delete-btn") {
+		deleteListDialog.showModal();
+	}
+});
+
+cancelDeleteBtn.addEventListener("click", (e) => {
+	deleteListDialog.close();
+});
+
+//handles deletion of lists
+deleteListForm.addEventListener("submit", (e) => {
+	e.preventDefault();
+
+	//filter out any list that matches the id of the one the user selected
+	const newListForLocalStorage = listFromLocalStorage().filter(
+		(obj) => obj.id !== Number(selectedList.id),
+	);
+
+	//if there's no items left to store in the local storage array, then remove the array from local storage completely
+	if (newListForLocalStorage.length === 0) {
+		localStorage.removeItem("lists");
+		toggleListDisplay();
+	} else {
+		localStorage.setItem("lists", JSON.stringify(newListForLocalStorage));
+	}
+
+	selectedList.remove(); //removes the selected list from the DOM
+
+	selectedList = null; //reset selected list to null so that another list can be stored inside in the future
+
+	deleteListDialog.close();
 });
 
 //stores the user's input in local storage and then displays it to the user
@@ -205,7 +255,7 @@ function addListToHTML() {
 
 	if (listFromLocalStorage().length === 1) {
 		populateListItem(lastObjInLocalStorage); //update the newly added item with the right information
-		displayList(); //display list container for the first time
+		toggleListDisplay(); //display list container for the first time
 	} else {
 		//if there are some lists in the container
 

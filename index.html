@@ -48,6 +48,19 @@
             </form>
         </dialog>
 
+        <dialog id="delete-list-dialog">
+            <form id="delete-list-form">
+                <img
+                    src=""
+                    alt="A picture of a list that's about to be deleted"
+                />
+                <h2>Delete your list?</h2>
+                <p>You can't undo this?</p>
+                <button type="submit" id="confirm-delete-btn">Delete</button>
+                <button type="button" id="cancel-delete-btn">Cancel</button>
+            </form>
+        </dialog>
+
         <main>
             <article id="no-lists-cont">
                 <img src="" alt="woman with an empty shopping cart" />
@@ -75,7 +88,7 @@
                                 class="open-button"
                                 >Open</a
                             >
-                            <button>Delete</button>
+                            <button class="delete-btn">Delete</button>
                         </div>
                     </li>
                 </ul>

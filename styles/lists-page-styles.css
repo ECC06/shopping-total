@@ -6,7 +6,7 @@ header {
 	display: none;
 }
 
-#list-cont {
+.list-cont {
 	margin-top: 40px;
 	border: 2px solid red;
 }

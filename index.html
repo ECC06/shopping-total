@@ -13,7 +13,7 @@
             <h1>Your lists</h1>
         </header>
 
-        <dialog>
+        <dialog id="add-list-dialog">
             <form id="add-item-form">
                 <img src="" alt="list with a green background" />
                 <br />
@@ -29,9 +29,22 @@
                 />
 
                 <button type="submit" class="add-item-btn">Add item</button>
-                <button type="button" id="cancel-create-list-btn">
-                    Cancel
-                </button>
+                <button type="button" id="close-dialog-btn">Cancel</button>
+            </form>
+        </dialog>
+
+        <dialog id="update-name-dialog">
+            <form id="update-name-form">
+                <input
+                    type="text"
+                    name="new-name-input"
+                    id="new-name-input"
+                    placeholder="Enter new name"
+                    required
+                />
+
+                <button type="submit" id="change-name-btn">Change name</button>
+                <button type="button" id="cancel-change-btn">Cancel</button>
             </form>
         </dialog>
 
@@ -53,7 +66,10 @@
                             <p></p>
                         </div>
 
+                        <button class="edit-btn">Edit</button>
+
                         <div>
+                            <br />
                             <a
                                 href="../codeForOneList/list-page.html"
                                 class="open-button"

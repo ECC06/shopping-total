@@ -1,10 +1,6 @@
-//...THIS FILE CONTAINS UTILITY FUNCTIONS THAT ARE REPEATED THROUGHOUT THE APP'S MAIN LOGIC
+//...THIS FILE CONTAINS DEPENDENCIES FOR lists-page.js
 
-import {
-	lastElemOfList,
-	listsArrFromLocalStorage,
-	localStorageEmpty,
-} from "./lists-page.js";
+import { lastElemOfList, listsArrFromLocalStorage } from "./lists-page.js";
 
 //hides the default page and shows the list
 function toggleListDisplay() {
@@ -20,19 +16,6 @@ function toggleListDisplay() {
 	listsAndAddButtonCont.classList.toggle("display-none"); //show lists
 }
 
-//returns true if the name the user types in has been stored by them previously. otherwise, it returns false
-function userDuplicatedTitle(userInput) {
-	if (!localStorageEmpty()) {
-		for (const obj of listsArrFromLocalStorage()) {
-			if (obj.listName === userInput) {
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
 function populateListItem(listObj) {
 	lastElemOfList().id = listObj.id; //populate the last list item with the id of the single list object in local storage
 
@@ -45,6 +28,19 @@ function populateListItem(listObj) {
 	//updates the inner text of the newly added list element with properties the last object in local storage
 	listNameElem.innerText = listObj.listName;
 	dateCreatedElem.innerText = listObj.dateOfCreation;
+}
+
+//returns true if the name the user types in has been stored by them previously. otherwise, it returns false
+function userDuplicatedTitle(userInput) {
+	if (localStorage.getItem("lists")) {
+		for (const obj of listsArrFromLocalStorage()) {
+			if (userInput.toLowerCase() === obj["listName"].toLowerCase()) {
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 export { toggleListDisplay, userDuplicatedTitle, populateListItem };

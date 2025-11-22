@@ -1,4 +1,4 @@
-//...THIS FILE CONTAINS NO DOM DEPENDENCIES
+//...THIS FILE CONTAINS FUNCTIONS that are shared by list-page.js and lists-page.js
 
 //creates a new array in local storage if it's empty, or updates the existing array if it's not
 export function updateLocalStorage(key, obj) {

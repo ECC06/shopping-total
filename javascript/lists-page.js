@@ -1,12 +1,11 @@
 //...THIS FILE CONTAINS THE MAIN LOGIC OF MANAGING USER LISTS
 
-import { updateLocalStorage } from "./shared.js";
-
 import {
 	populateListItem,
 	toggleListDisplay,
-	userDuplicatedTitle,
-} from "./utility-functions.js";
+	userDuplicatedTitle as userDuplicatedListTitle,
+} from "./lists-page-utilities.js";
+import { updateLocalStorage } from "./shared.js";
 
 const initialCreateListBtn = document.querySelector("#create-list-btn");
 const cancelCreateListBtn = document.querySelector("#close-dialog-btn");
@@ -28,7 +27,7 @@ let listToDelete = null; //the list that was selected for updating or deleting
 
 export const listsArrFromLocalStorage = () =>
 	JSON.parse(localStorage.getItem("lists"));
-export const localStorageEmpty = () => !localStorage.getItem("lists");
+
 export const lastElemOfList = () => listsCont.lastElementChild; //gets the current last element of the list (it's changes as more and more are added)
 
 //object that will contain info about each list item
@@ -39,7 +38,7 @@ const listObj = {};
 document.addEventListener("DOMContentLoaded", () => {
 	const listCont = document.querySelector(".list-cont");
 
-	if (!localStorageEmpty()) {
+	if (localStorage.getItem("lists")) {
 		listsCont.innerHTML = "";
 
 		listsArrFromLocalStorage().forEach((obj) => {
@@ -65,7 +64,7 @@ nameListForm.addEventListener("submit", (e) => {
 
 	const listName = nameListForm.elements["list-name-input"].value;
 
-	if (userDuplicatedTitle(listName)) {
+	if (userDuplicatedListTitle(listName)) {
 		// Check for duplicates before storing
 		alert(`You already have a list named ${listName}!`);
 		return;
@@ -113,8 +112,8 @@ updateListNameDialog.addEventListener("submit", (e) => {
 	e.preventDefault();
 	const storedList = listsArrFromLocalStorage();
 
-	if (userDuplicatedTitle(newNameInputElem.value)) {
-		alert(`You already have a list named ${newNameInputElem.value}!`);
+	if (userDuplicatedListTitle(newNameInputElem.value)) {
+		alert(`You already have a list with this name! Try something else.`);
 		return;
 	}
 
@@ -166,15 +165,14 @@ deleteListForm.addEventListener("submit", (e) => {
 		(obj) => obj.id !== Number(listToDelete.id),
 	);
 
-	//if there's no items left to store in the local storage array, then remove the array from local storage completely
+	//if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new lists in local storage, with the selected list deleted
 	if (newListForLocalStorage.length === 0) {
 		localStorage.removeItem("lists");
 		toggleListDisplay();
 	} else {
 		localStorage.setItem("lists", JSON.stringify(newListForLocalStorage));
+		listToDelete.remove(); //removes the selected list from the DOM
 	}
-
-	listToDelete.remove(); //removes the selected list from the DOM
 
 	listToDelete = null; //reset selected list to null so that another list can be stored inside in the future
 

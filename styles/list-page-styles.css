@@ -28,7 +28,7 @@ li {
 	gap: 16px;
 }
 
-.quantity-control {
+.quantity-controls {
 	display: flex;
 	align-items: center;
 	gap: 12px;

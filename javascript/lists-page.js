@@ -5,7 +5,8 @@ import {
 	toggleListDisplay,
 	userDuplicatedTitle as userDuplicatedListTitle,
 } from "./lists-page-utilities.js";
-import { updateLocalStorage } from "./shared.js";
+
+import { listsArrFromLocalStorage, updateLocalStorage } from "./shared.js";
 
 const initialCreateListBtn = document.querySelector("#create-list-btn");
 const cancelCreateListBtn = document.querySelector("#close-dialog-btn");
@@ -26,25 +27,17 @@ const cancelDeleteBtn = document.querySelector("#cancel-delete-btn");
 let listToUpdateName = null; //the list that was selected for updating or deleting
 let listToDelete = null; //the list that was selected for updating or deleting
 
-export const listsArrFromLocalStorage = () =>
-	JSON.parse(localStorage.getItem("lists"));
-
 export const lastElemOfList = () => listsCont.lastElementChild; //gets the current last element of the list (it's changes as more and more are added)
 
 //object that will contain info about each list item
-const listObj = {};
+const listObject = {};
 
 //!READ lists in local storage
 //if local storage is not empty, this handler fetches the array of lists from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", () => {
 	if (localStorage.getItem("lists")) {
-		// listsCont.innerHTML = ""; //removing the single list item inside lists cont for now.
-
 		listsArrFromLocalStorage().forEach((obj) => {
-			//each iteration appends a clone of listCont, instead of listCont itself, so that it doesn't get moved every time appendChild is called
-			const clonedList = listCont.cloneNode(true);
-			listsCont.appendChild(clonedList);
-			populateListItem(obj);
+			addListToHTML(obj);
 		});
 
 		toggleListDisplay();
@@ -69,12 +62,18 @@ nameListForm.addEventListener("submit", (e) => {
 		alert(`You already have a list named ${listName}!`);
 		return;
 	} else {
-		listObj["listName"] = listName;
+		listObject["listName"] = listName;
 	}
 
 	storeList();
-	addListToHTML();
+	addListToHTML(listObject);
 	nameListForm.elements["list-name-input"].value = "";
+
+	//if true, a user is adding an list for the first time
+	if (listsArrFromLocalStorage().length === 1) {
+		toggleListDisplay(); //display list container for the first time if there's only one list in local storage
+	}
+
 	addListDialog.close();
 });
 
@@ -156,6 +155,16 @@ listsCont.addEventListener("click", (e) => {
 	}
 });
 
+//!STORE LIST ID
+// listsCont.addEventListener("click", (e) => {
+// 	if (e.target.className === "open-btn") {
+// 		e.preventDefault();
+// 		const id = e.target.parentElement.parentElement.id;
+// 		localStorage.setItem("currentListId", id); // Store the list id in local storage
+// 		window.location.href = "./list-page.html";
+// 	}
+// });
+
 //handles deletion of lists
 deleteListForm.addEventListener("submit", (e) => {
 	e.preventDefault();
@@ -189,7 +198,7 @@ cancelDeleteBtn.addEventListener("click", (e) => {
 function storeList() {
 	//store list id
 	const listId = Math.floor(Math.random() * 900) + 100; //generates a number between 100 and 999 inclusive
-	listObj["id"] = listId;
+	listObject["id"] = listId;
 
 	//store date of creation
 	const dateObj = new Date();
@@ -197,25 +206,19 @@ function storeList() {
 	const day = dateObj.getDate();
 	const year = dateObj.getFullYear();
 	const dateOfCreation = `Created: ${month} ${day} ${year}`;
-	listObj["dateOfCreation"] = dateOfCreation;
+	listObject["dateOfCreation"] = dateOfCreation;
 
 	//creates a new array in local storage if it's empty, or updates the existing array if it's not
-	updateLocalStorage("lists", listObj);
+	updateLocalStorage("lists", listObject);
 }
 
 //adds a new item to the list container and populates it with the newly added list data (e.g the list name the user just typed in)
-function addListToHTML() {
-	const lastObjInLocalStorage =
-		listsArrFromLocalStorage()[listsArrFromLocalStorage().length - 1];
-
+function addListToHTML(listObj) {
 	const clonedList = listCont.cloneNode(true);
 	listsCont.appendChild(clonedList);
+	clonedList.classList.toggle("display-none"); //display list item
 
-	populateListItem(lastObjInLocalStorage); //update the newly added item with the right information
+	populateListItem(listObj); //update the newly added item with the right information
 
 	addListDialog.close();
-	//if true, a user is adding an list for the first time
-	if (listsArrFromLocalStorage().length === 1) {
-		toggleListDisplay();
-	} //display list container for the first time if there's only one list in local storage
 }

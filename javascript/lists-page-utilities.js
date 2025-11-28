@@ -1,10 +1,8 @@
 //...THIS FILE CONTAINS DEPENDENCIES FOR lists-page.js
 
-import {
-	lastElemOfList,
-	listCont,
-	listsArrFromLocalStorage,
-} from "./lists-page.js";
+import { lastElemOfList } from "./lists-page.js";
+
+import { listsArrFromLocalStorage } from "./shared.js";
 
 //hides the default page and shows the list
 function toggleListDisplay() {
@@ -24,8 +22,6 @@ function populateListItem(listObj) {
 	const listToPopulate = lastElemOfList();
 
 	listToPopulate.id = listObj.id; //populate the last list item with the id of the single list object in local storage
-
-	listToPopulate.classList.remove("display-none");
 
 	//extracts the elements containing the list element's name and date of creation from a the first div in the last list item
 	const [listNameElem, dateCreatedElem] =

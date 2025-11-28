@@ -1,6 +1,10 @@
 //...THIS FILE CONTAINS DEPENDENCIES FOR list-page.js
 
-import { getCurrentTotalElem, itemsArrFromLocalStorage } from "./list-page.js";
+import {
+	getCurrentTotalElem,
+	itemsArrFromLocalStorage,
+	itemsCont,
+} from "./list-page.js";
 
 function userDuplicatedItemName(userInput) {
 	if (localStorage.getItem("list-items")) {
@@ -32,8 +36,8 @@ function manipulateQuantity(buttonElem) {
 		buttonElem.parentElement.previousElementSibling.firstElementChild;
 	const quantityElem = buttonElem.parentElement.children[1];
 
-	const currentPrice = Number(priceElem.innerText);
-	let currentTotal = Number(getCurrentTotalElem().innerText);
+	const itemPrice = Number(priceElem.innerText);
+	let listTotal = Number(getCurrentTotalElem().innerText);
 
 	let updatedPrice = null;
 	let updatedQuantity = null;
@@ -46,20 +50,22 @@ function manipulateQuantity(buttonElem) {
 	priceElem.innerText = updatedPrice;
 
 	//update the total in HTML
-	getCurrentTotalElem().innerText = currentTotal;
+	getCurrentTotalElem().innerText = listTotal;
 
-	updateStoredPriceAndQuantity(selectedListId, updatedQuantity, currentTotal);
+	updateStoredPriceAndQuantity(selectedListId, updatedQuantity, listTotal);
 
 	function updateVariables() {
 		if (buttonElem.className === "plus-btn") {
 			updatedQuantity = Number(quantityElem.innerText) + 1;
-			updatedPrice = currentPrice + originalPrice;
-			currentTotal += originalPrice;
+			updatedPrice = itemPrice + originalPrice; //adding on to the price
+			listTotal += originalPrice;
 		} else if (buttonElem.className === "minus-btn") {
 			updatedQuantity = Number(quantityElem.innerText) - 1;
-			updatedPrice = currentPrice - originalPrice;
-			currentTotal -= originalPrice;
+			updatedPrice = itemPrice - originalPrice;
+			listTotal -= originalPrice;
 		}
+
+		localStorage.setItem("list-total", listTotal);
 	}
 }
 
@@ -78,6 +84,27 @@ function updateStoredPriceAndQuantity(listId, newQuantity, newTotal) {
 
 		localStorage.setItem("list-items", JSON.stringify(storedItems));
 	}
+}
+
+//looks into local storage and checks any items in the HTML that the user has previously checked
+export function checkPreviouslyCheckedItems() {
+	const listItems = Array.from(itemsCont.children);
+	const idsOfCheckedElements = [];
+
+	//store the ids of all elements that are checked in the "idsOfCheckedElements" array
+	itemsArrFromLocalStorage().forEach((obj) => {
+		if (obj.checked) {
+			idsOfCheckedElements.push(obj.id);
+		}
+	});
+
+	//iterate over all the list items, and any that have an id in "idsOfCheckedElements" should be checked
+	listItems.forEach((item) => {
+		if (idsOfCheckedElements.includes(Number(item.id))) {
+			const checkboxInput = item.firstElementChild.firstElementChild;
+			checkboxInput.checked = true;
+		}
+	});
 }
 
 export { userDuplicatedItemName, manipulateQuantity };

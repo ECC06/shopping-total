@@ -6,6 +6,10 @@ import {
 } from "./list-page-utilities.js";
 import { updateLocalStorage } from "./shared.js";
 
+const noItemsCont = document.querySelector("#no-items-cont");
+const itemsAndAddBtnCont = document.querySelector("#items-and-add-btn-cont");
+const h1 = document.querySelector("h1");
+
 const addItemsDialog = document.querySelector("#add-items-dialog");
 const firstAddItemBtn = document.querySelector("#first-add-item-btn");
 const closeAddItemBtn = document.querySelector("#close-add-item-form");
@@ -14,6 +18,8 @@ const addItemsForm = document.querySelector("#add-items-form");
 const cancelAddItemBtn = document.querySelector("#cancel-add-item-btn");
 const itemsCont = document.querySelector("#items-cont");
 const [nameInputElem, descInputElem, priceInputElem] = addItemsForm.elements;
+const listCont = document.querySelector(".list-item");
+
 export const getCurrentTotalElem = () => document.querySelector("#total");
 
 //object that will contain info about each list item
@@ -124,13 +130,17 @@ function addItemToHTML() {
 	const lastObjInLocalStorage =
 		itemsArrFromLocalStorage()[itemsArrFromLocalStorage().length - 1];
 
+	const clonedList = listCont.cloneNode(true); //clone the last item in the list
+	itemsCont.appendChild(clonedList); //add it to the list
+	populateItem(lastObjInLocalStorage); //populate the item with the correct data
+
+	//if true, a user is adding an item for the first time
+	// debugger;
 	if (itemsArrFromLocalStorage().length === 1) {
-		populateItem(lastObjInLocalStorage);
-	} else {
-		//if there are some lists in the container
-		const cloned = lastItemOfList().cloneNode(true); //clone the last item in the list
-		itemsCont.appendChild(cloned); //add it to the list
-		populateItem(lastObjInLocalStorage);
+		clonedList.classList.toggle("display-none"); //hide the default page
+		noItemsCont.classList.toggle("display-none"); //hide the default page
+		h1.classList.toggle("display-none"); //show the list title
+		itemsAndAddBtnCont.classList.toggle("display-none"); //show the list of items
 	}
 
 	addItemsDialog.close();
@@ -138,14 +148,16 @@ function addItemToHTML() {
 
 //populates list items with the data the user provides in the form
 function populateItem(lastObj) {
-	lastItemOfList().id = lastObj.id; //populate the last list item with the id of the single list object in local storage
+	const itemToPopulate = lastItemOfList();
+
+	itemToPopulate.id = lastObj.id; //populate the last list item with the id of the single list object in local storage
 
 	//todo: will need this later
 	// lastElemOfList().classList.remove("display-none");
 
 	//populate existing list item
-	const nameAndDescriptionCont = lastItemOfList().children[0];
-	const priceAndQuantityCont = lastItemOfList().children[1];
+	const nameAndDescriptionCont = itemToPopulate.children[0];
+	const priceAndQuantityCont = itemToPopulate.children[1];
 
 	const [input, nameLabel, descriptionElem] = nameAndDescriptionCont.children;
 	nameLabel.innerText = lastObj.itemName;

@@ -13,6 +13,7 @@ const nameListForm = document.querySelector("#add-item-form");
 const addListDialog = document.querySelector("#add-list-dialog");
 const addListBtn = document.querySelector("#add-list-btn");
 const listsCont = document.querySelector("#lists-cont");
+export const listCont = document.querySelector(".list-cont");
 
 const updateListNameDialog = document.querySelector("#update-name-dialog");
 const cancelChangeBtn = document.querySelector("#cancel-change-btn");
@@ -36,14 +37,13 @@ const listObj = {};
 //!READ lists in local storage
 //if local storage is not empty, this handler fetches the array of lists from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", () => {
-	const listCont = document.querySelector(".list-cont");
-
 	if (localStorage.getItem("lists")) {
-		listsCont.innerHTML = "";
+		// listsCont.innerHTML = ""; //removing the single list item inside lists cont for now.
 
 		listsArrFromLocalStorage().forEach((obj) => {
-			//each iteration appends a clone of listCont so that listCont doesn't get moved every time appendChild is called
-			listsCont.appendChild(listCont.cloneNode(true));
+			//each iteration appends a clone of listCont, instead of listCont itself, so that it doesn't get moved every time appendChild is called
+			const clonedList = listCont.cloneNode(true);
+			listsCont.appendChild(clonedList);
 			populateListItem(obj);
 		});
 
@@ -161,16 +161,17 @@ deleteListForm.addEventListener("submit", (e) => {
 	e.preventDefault();
 
 	//filter out any list that matches the id of the one the user selected
-	const newListForLocalStorage = listsArrFromLocalStorage().filter(
+	const listsToKeepInStorage = listsArrFromLocalStorage().filter(
 		(obj) => obj.id !== Number(listToDelete.id),
 	);
 
 	//if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new lists in local storage, with the selected list deleted
-	if (newListForLocalStorage.length === 0) {
+	if (listsToKeepInStorage.length === 0) {
 		localStorage.removeItem("lists");
+		listsCont.innerHTML = ""; //remove the list elements from the HTML as well
 		toggleListDisplay();
 	} else {
-		localStorage.setItem("lists", JSON.stringify(newListForLocalStorage));
+		localStorage.setItem("lists", JSON.stringify(listsToKeepInStorage));
 		listToDelete.remove(); //removes the selected list from the DOM
 	}
 
@@ -207,15 +208,14 @@ function addListToHTML() {
 	const lastObjInLocalStorage =
 		listsArrFromLocalStorage()[listsArrFromLocalStorage().length - 1];
 
-	if (listsArrFromLocalStorage().length === 1) {
-		populateListItem(lastObjInLocalStorage); //update the newly added item with the right information
-		toggleListDisplay(); //display list container for the first time
-		addListDialog.close();
-	} else {
-		//if there are some lists in the container
+	const clonedList = listCont.cloneNode(true);
+	listsCont.appendChild(clonedList);
 
-		const cloned = lastElemOfList().cloneNode(true); //clone the last item in the list
-		listsCont.appendChild(cloned); //add it to the list
-		populateListItem(lastObjInLocalStorage);
-	}
+	populateListItem(lastObjInLocalStorage); //update the newly added item with the right information
+
+	addListDialog.close();
+	//if true, a user is adding an list for the first time
+	if (listsArrFromLocalStorage().length === 1) {
+		toggleListDisplay();
+	} //display list container for the first time if there's only one list in local storage
 }

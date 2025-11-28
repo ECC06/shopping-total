@@ -39,3 +39,7 @@ li {
 	font-weight: bold;
 	text-align: center;
 }
+
+.display-none {
+	display: none;
+}

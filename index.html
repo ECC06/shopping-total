@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Your lists</title>
         <link rel="stylesheet" href="./styles/lists-page-styles.css" />
-        <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
         <script type="module" src="./javascript/lists-page.js" defer></script>
     </head>
     <body>
@@ -56,6 +56,23 @@
             </form>
         </dialog>
 
+        <!-- initial list element that's empty -->
+        <li class="list-cont display-none">
+            <div>
+                <h2 id="list-name"></h2>
+                <p id="list-created"></p>
+                <p></p>
+            </div>
+
+            <button class="edit-btn">Edit</button>
+
+            <div>
+                <br />
+                <a href="./list-page.html" class="open-button">Open</a>
+                <button class="delete-btn">Delete</button>
+            </div>
+        </li>
+
         <header class="display-none">
             <h1>Your lists</h1>
         </header>
@@ -69,26 +86,7 @@
 
             <div id="lists-and-add-button-cont" class="display-none">
                 <button id="add-list-btn">+</button>
-                <ul id="lists-cont">
-                    <!-- initial list element that's empty -->
-                    <li class="list-cont display-none">
-                        <div>
-                            <h2 id="list-name"></h2>
-                            <p id="list-created"></p>
-                            <p></p>
-                        </div>
-
-                        <button class="edit-btn">Edit</button>
-
-                        <div>
-                            <br />
-                            <a href="./list-page.html" class="open-button"
-                                >Open</a
-                            >
-                            <button class="delete-btn">Delete</button>
-                        </div>
-                    </li>
-                </ul>
+                <ul id="lists-cont"></ul>
             </div>
         </main>
     </body>

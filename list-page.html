@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Your lists</title>
         <link rel="stylesheet" href="./styles/list-page-styles.css" />
-        <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
         <script type="module" src="./javascript/list-page.js" defer></script>
     </head>
 
@@ -53,46 +53,46 @@
         </form>
     </dialog>
 
+    <li class="list-item display-none">
+        <div class="name-and-desc">
+            <input type="checkbox" id="name" />
+            <label for="name" id="name"></label>
+            <p id="description"></p>
+        </div>
+
+        <div class="price-and-quantity">
+            <p><span class="price"></span> ghc</p>
+
+            <div class="quantity-controls">
+                <button class="minus-btn">-</button>
+                <p class="quantity">1</p>
+                <button class="plus-btn">+</button>
+            </div>
+        </div>
+
+        <button class="delete-btn">delete</button>
+    </li>
+
     <header>
         <a href="./index.html">&lt-</a>
-        <h1>[Title goes here]</h1>
+        <h1 class="display-none">[Title goes here]</h1>
     </header>
 
     <main>
-        <article id="no-items-cont">
+        <article id="no-items-cont" class="">
             <img src="" alt="An empty basket" />
             <h2>You have no items</h2>
             <button id="first-add-item-btn">Add some!</button>
         </article>
 
-        <article id="items-and-add-btn">
+        <article id="items-and-add-btn-cont" class="display-none">
             <button id="main-add-item-btn">
                 Add an item
                 <span>+</span>
             </button>
 
             <div>
-                <ul id="items-cont">
-                    <li class="list-item">
-                        <div class="name-and-desc">
-                            <input type="checkbox" id="name" />
-                            <label for="name" id="name"></label>
-                            <p id="description"></p>
-                        </div>
-
-                        <div class="price-and-quantity">
-                            <p><span class="price"></span> ghc</p>
-
-                            <div class="quantity-controls">
-                                <button class="minus-btn">-</button>
-                                <p class="quantity">1</p>
-                                <button class="plus-btn">+</button>
-                            </div>
-                        </div>
-
-                        <button class="delete-btn">delete</button>
-                    </li>
-                </ul>
+                <ul id="items-cont"></ul>
 
                 <h2 id="total-cont">Total: <span id="total">0</span> ghc</h2>
             </div>

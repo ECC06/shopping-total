@@ -14,6 +14,7 @@ const addItemsForm = document.querySelector("#add-items-form");
 const cancelAddItemBtn = document.querySelector("#cancel-add-item-btn");
 const itemsCont = document.querySelector("#items-cont");
 const [nameInputElem, descInputElem, priceInputElem] = addItemsForm.elements;
+export const getCurrentTotalElem = () => document.querySelector("#total");
 
 //object that will contain info about each list item
 const itemObj = {};
@@ -48,6 +49,11 @@ addItemsForm.addEventListener("submit", (e) => {
 		return;
 	} else {
 		itemObj["itemName"] = nameInputElem.value;
+
+		//updates the current total displayed to the user in the HTML
+		let currentTotal = Number(getCurrentTotalElem().innerText);
+		currentTotal += Number(priceInputElem.value);
+		getCurrentTotalElem().innerText = currentTotal;
 	}
 
 	storeFormInput();
@@ -108,7 +114,7 @@ function storeFormInput() {
 	itemObj["price"] = Number(priceInputElem.value);
 	itemObj["quantity"] = 1;
 
-	itemObj["total"] = Number(priceInputElem.value); //by default, the total is the same as the starting price, because the quantity is still 1
+	itemObj["total"] = Number(getCurrentTotalElem().innerText);
 
 	updateLocalStorage("list-items", itemObj);
 }

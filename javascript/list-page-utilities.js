@@ -1,6 +1,6 @@
 //...THIS FILE CONTAINS DEPENDENCIES FOR list-page.js
 
-import { itemsArrFromLocalStorage } from "./list-page.js";
+import { getCurrentTotalElem, itemsArrFromLocalStorage } from "./list-page.js";
 
 function userDuplicatedItemName(userInput) {
 	if (localStorage.getItem("list-items")) {
@@ -24,7 +24,7 @@ function manipulateQuantity(buttonElem) {
 	//go into local storage and get the original price of the item using the id in the HTML
 	itemsArrFromLocalStorage().forEach((obj) => {
 		if (obj.id === selectedListId) {
-			originalPrice = obj.price;
+			originalPrice = obj.price; //update the "originalPrice" global variable
 		}
 	});
 
@@ -33,27 +33,38 @@ function manipulateQuantity(buttonElem) {
 	const quantityElem = buttonElem.parentElement.children[1];
 
 	const currentPrice = Number(priceElem.innerText);
+	let currentTotal = Number(getCurrentTotalElem().innerText);
+
 	let updatedPrice = null;
 	let updatedQuantity = null;
 
-	//decrease or increase the price and quantity depending on the type of button clicked
+	//update the price, quantity and total variables
+	updateVariables();
 
-	if (buttonElem.className === "plus-btn") {
-		updatedQuantity = Number(quantityElem.innerText) + 1;
-		updatedPrice = currentPrice + originalPrice;
-	} else if (buttonElem.className === "minus-btn") {
-		updatedQuantity = Number(quantityElem.innerText) - 1;
-		updatedPrice = currentPrice - originalPrice;
-	}
-
+	//update the price and quantity in HTML
 	quantityElem.innerText = updatedQuantity;
 	priceElem.innerText = updatedPrice;
 
-	updatePriceAndQuantity(selectedListId, updatedQuantity, updatedPrice);
+	//update the total in HTML
+	getCurrentTotalElem().innerText = currentTotal;
+
+	updateStoredPriceAndQuantity(selectedListId, updatedQuantity, currentTotal);
+
+	function updateVariables() {
+		if (buttonElem.className === "plus-btn") {
+			updatedQuantity = Number(quantityElem.innerText) + 1;
+			updatedPrice = currentPrice + originalPrice;
+			currentTotal += originalPrice;
+		} else if (buttonElem.className === "minus-btn") {
+			updatedQuantity = Number(quantityElem.innerText) - 1;
+			updatedPrice = currentPrice - originalPrice;
+			currentTotal -= originalPrice;
+		}
+	}
 }
 
 //updates the price and quantity of an item in local storage using the items' id, found the in HTML
-function updatePriceAndQuantity(listId, newQuantity, newTotal) {
+function updateStoredPriceAndQuantity(listId, newQuantity, newTotal) {
 	const storedItems = itemsArrFromLocalStorage();
 	if (localStorage.getItem("list-items")) {
 		//updates the actual price in local storage

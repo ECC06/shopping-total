@@ -1,20 +1,20 @@
 //...THIS FILE CONTAINS THE MAIN LOGIC OF MANAGING USER LISTS
 
 import {
-	populateListItem,
+	addListToHTML,
+	storeList,
 	toggleListDisplay,
-	userDuplicatedTitle as userDuplicatedListTitle,
+	userDuplicatedListTitle,
 } from "./lists-page-utilities.js";
 
-import { listsArrFromLocalStorage, updateLocalStorage } from "./shared.js";
+import { listsArrFromLocalStorage } from "./shared.js";
 
 const initialCreateListBtn = document.querySelector("#create-list-btn");
 const cancelCreateListBtn = document.querySelector("#close-dialog-btn");
 const nameListForm = document.querySelector("#add-item-form");
-const addListDialog = document.querySelector("#add-list-dialog");
+export const addListDialog = document.querySelector("#add-list-dialog");
 const addListBtn = document.querySelector("#add-list-btn");
-const listsCont = document.querySelector("#lists-cont");
-export const listCont = document.querySelector(".list-cont");
+export const listsCont = document.querySelector("#lists-cont");
 
 const updateListNameDialog = document.querySelector("#update-name-dialog");
 const cancelChangeBtn = document.querySelector("#cancel-change-btn");
@@ -30,7 +30,7 @@ let listToDelete = null; //the list that was selected for updating or deleting
 export const lastElemOfList = () => listsCont.lastElementChild; //gets the current last element of the list (it's changes as more and more are added)
 
 //object that will contain info about each list item
-const listObject = {};
+export const listObject = {};
 
 //!READ lists in local storage
 //if local storage is not empty, this handler fetches the array of lists from local storage and displays it as HTML on the page
@@ -99,6 +99,7 @@ listsCont.addEventListener("click", (e) => {
 
 		//populates the input box with the list title that's already there
 		const divContainingListName = listToUpdateName.children[0];
+
 		newNameInputElem.value =
 			divContainingListName.children["list-name"].innerText;
 
@@ -109,12 +110,13 @@ listsCont.addEventListener("click", (e) => {
 //handles the updating of the list name
 updateListNameDialog.addEventListener("submit", (e) => {
 	e.preventDefault();
-	const storedList = listsArrFromLocalStorage();
 
 	if (userDuplicatedListTitle(newNameInputElem.value)) {
 		alert(`You already have a list with this name! Try something else.`);
 		return;
 	}
+
+	const storedList = listsArrFromLocalStorage();
 
 	//finds the right list obj in local storage and updates it with the user's input
 	for (const obj of storedList) {
@@ -156,14 +158,14 @@ listsCont.addEventListener("click", (e) => {
 });
 
 //!STORE LIST ID
-// listsCont.addEventListener("click", (e) => {
-// 	if (e.target.className === "open-btn") {
-// 		e.preventDefault();
-// 		const id = e.target.parentElement.parentElement.id;
-// 		localStorage.setItem("currentListId", id); // Store the list id in local storage
-// 		window.location.href = "./list-page.html";
-// 	}
-// });
+listsCont.addEventListener("click", (e) => {
+	if (e.target.className === "open-btn") {
+		e.preventDefault();
+		const id = e.target.parentElement.parentElement.id;
+		localStorage.setItem("currentListId", id); // Store the list id in local storage
+		window.location.href = "./list-page.html";
+	}
+});
 
 //handles deletion of lists
 deleteListForm.addEventListener("submit", (e) => {
@@ -193,32 +195,3 @@ deleteListForm.addEventListener("submit", (e) => {
 cancelDeleteBtn.addEventListener("click", (e) => {
 	deleteListDialog.close();
 });
-
-//stores the user's input in local storage and then displays it to the user
-function storeList() {
-	//store list id
-	const listId = Math.floor(Math.random() * 900) + 100; //generates a number between 100 and 999 inclusive
-	listObject["id"] = listId;
-
-	//store date of creation
-	const dateObj = new Date();
-	const month = dateObj.toLocaleString("default", { month: "short" });
-	const day = dateObj.getDate();
-	const year = dateObj.getFullYear();
-	const dateOfCreation = `Created: ${month} ${day} ${year}`;
-	listObject["dateOfCreation"] = dateOfCreation;
-
-	//creates a new array in local storage if it's empty, or updates the existing array if it's not
-	updateLocalStorage("lists", listObject);
-}
-
-//adds a new item to the list container and populates it with the newly added list data (e.g the list name the user just typed in)
-function addListToHTML(listObj) {
-	const clonedList = listCont.cloneNode(true);
-	listsCont.appendChild(clonedList);
-	clonedList.classList.toggle("display-none"); //display list item
-
-	populateListItem(listObj); //update the newly added item with the right information
-
-	addListDialog.close();
-}

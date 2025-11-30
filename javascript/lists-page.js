@@ -161,8 +161,13 @@ listsCont.addEventListener("click", (e) => {
 listsCont.addEventListener("click", (e) => {
 	if (e.target.className === "open-btn") {
 		e.preventDefault();
-		const id = e.target.parentElement.parentElement.id;
-		localStorage.setItem("currentListId", id); // Store the list id in local storage
+		const listItem = e.target.parentElement.parentElement;
+		const listId = listItem.id;
+		const listName = listItem.firstElementChild.firstElementChild.innerText;
+
+		localStorage.setItem("list-id", listId); // Store the list id in local storage for use inside of the list
+		localStorage.setItem("list-name", listName); // Store the list's name in local storage for use inside of the list
+
 		window.location.href = "./list-page.html";
 	}
 });

@@ -4,6 +4,7 @@ import {
 	addItemsDialog,
 	descInputElem,
 	getCurrentTotalElem,
+	h1,
 	itemObject,
 	itemsArrFromLocalStorage,
 	itemsCont,
@@ -122,9 +123,11 @@ export function addNewItem() {
 	itemObject["itemName"] = nameInputElem.value;
 
 	//updates the list total displayed to the user, every time the user adds a price
-	let currentTotal = Number(getCurrentTotalElem().innerText);
+	const totalElem = getCurrentTotalElem();
+
+	let currentTotal = Number(totalElem.innerText);
 	currentTotal += Number(priceInputElem.value);
-	getCurrentTotalElem().innerText = currentTotal;
+	totalElem.innerText = currentTotal;
 
 	localStorage.setItem("list-total", currentTotal);
 
@@ -181,7 +184,7 @@ function storeFormInput() {
 	itemObject["quantity"] = 1;
 	itemObject["checked"] = false;
 
-	itemObject["total"] = Number(getCurrentTotalElem().innerText);
+	itemObject["total"] = Number(priceInputElem.value);
 
 	storeItemsInLocalStorage("list-items", itemObject);
 }
@@ -193,9 +196,10 @@ export function addItemToHTML(listObj) {
 
 	const clonedList = listItem.cloneNode(true); //clone the last item in the list
 	itemsCont.appendChild(clonedList); //add it to the list
-	clonedList.classList.toggle("display-none"); //display list item
 
 	populateItem(listObj, lastItemOfList()); //populate the item with the correct data
+
+	clonedList.classList.toggle("display-none"); //display list item
 }
 
 //!ud
@@ -213,7 +217,7 @@ export function populateItem(listItemObj, itemToPopulate) {
 	descriptionElem.innerText = listItemObj.description;
 
 	const priceElem = priceAndQuantityCont.firstElementChild.firstElementChild;
-	priceElem.innerText = listItemObj.price;
+	priceElem.innerText = listItemObj.total;
 
 	const quantityElem = priceAndQuantityCont.children[1].children[1];
 	quantityElem.innerText = 1;
@@ -222,7 +226,6 @@ export function populateItem(listItemObj, itemToPopulate) {
 export function toggle() {
 	const noItemsCont = document.querySelector("#no-items-cont");
 	const itemsAndAddBtnCont = document.querySelector("#items-and-add-btn-cont");
-	const h1 = document.querySelector("h1");
 
 	noItemsCont.classList.toggle("display-none"); //hide the default page
 	h1.classList.toggle("display-none"); //show the list title

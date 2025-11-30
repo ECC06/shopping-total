@@ -10,6 +10,7 @@ import {
 	userDuplicatedItemName,
 } from "./list-page-utilities.js";
 
+export const h1 = document.querySelector("h1");
 export const addItemsDialog = document.querySelector("#add-items-dialog");
 const firstAddItemBtn = document.querySelector("#first-add-item-btn");
 const closeAddItemBtn = document.querySelector("#close-add-item-form");
@@ -18,12 +19,19 @@ const addItemsForm = document.querySelector("#add-items-form");
 const cancelAddItemBtn = document.querySelector("#cancel-add-item-btn");
 export const itemsCont = document.querySelector("#items-cont");
 
+const deleteItemDialog = document.querySelector("#delete-item-dialog");
+const deleteItemForm = document.querySelector("#delete-item-form");
+const cancelDeleteItemBtn = document.querySelector("#cancel-delete-item-btn");
+
+const backBtn = document.querySelector("#back-btn");
+
 export const getCurrentTotalElem = () => document.querySelector("#total");
 
 const formElements = Array.from(addItemsForm.elements);
 export const [nameInputElem, descInputElem, priceInputElem] = formElements;
 
 export const itemToUpdate = { val: null };
+let itemToDelete = null;
 
 //object that will contain info about each list item
 export const itemObject = {};
@@ -34,6 +42,7 @@ export const itemsArrFromLocalStorage = () =>
 //!READ lists items in local storage
 //if local storage is not empty, this handler fetches the array of items from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", (e) => {
+	h1.innerText = localStorage.getItem("list-name");
 	if (localStorage.getItem("list-items")) {
 		itemsArrFromLocalStorage().forEach((obj) => {
 			//each iteration appends a clone of listCont, instead of listCont itself, so that it doesn't get moved every time appendChild is called
@@ -57,6 +66,7 @@ firstAddItemBtn.addEventListener("click", (e) => {
 
 //second button that handles the opening of a form for adding list items
 mainAddItemBtn.addEventListener("click", (e) => {
+	//clears the former input in the form data for a fresh, clean, form
 	formElements.forEach((element) => {
 		if (element.className === "item-data-input") {
 			element.value = "";
@@ -178,4 +188,67 @@ itemsCont.addEventListener("click", (e) => {
 			manipulateQuantity(minusBtn);
 		}
 	}
+});
+
+//!DELETE ITEMS
+//displays the form that allows a user to confirm whether they are deleting an item
+itemsCont.addEventListener("click", (e) => {
+	//using event delegation to capture click events on the delete button
+	if (e.target.className === "delete-btn") {
+		itemToDelete = e.target.parentElement;
+		deleteItemDialog.showModal();
+	}
+});
+
+//closes the form that allows a user to confirm whether they are deleting an item
+cancelDeleteItemBtn.addEventListener("click", (e) => {
+	deleteItemDialog.close();
+});
+
+//deletes an item
+deleteItemForm.addEventListener("click", (e) => {
+	e.preventDefault();
+
+	if (e.target.id === "confirm-delete-btn") {
+		let listDataInLocalStorage = null;
+
+		const listOfItems = itemsArrFromLocalStorage();
+
+		//a list that filters out the item the user wants to delete, and remains the one they want to keep
+		const itemsToKeepInStorage = listOfItems.filter((obj) => {
+			listDataInLocalStorage = obj;
+			return Number(itemToDelete.id) !== obj.id;
+		});
+
+		//if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new list in local storage, with the selected list deleted
+		if (itemsToKeepInStorage.length === 0) {
+			localStorage.removeItem("list-items");
+			itemsCont.innerHTML = ""; //remove the list elements from the HTML as well
+			localStorage.setItem("list-total", "0");
+			toggle();
+		} else {
+			// debugger;
+			localStorage.setItem("list-items", JSON.stringify(itemsToKeepInStorage));
+
+			//subtracts the price of the deleted item from the total and updates the total both in local storage and the HTML
+			let total = JSON.parse(localStorage.getItem("list-total"));
+			const priceOfDeletedItem = Number(listDataInLocalStorage.price);
+			total -= priceOfDeletedItem;
+
+			localStorage.setItem("list-total", total);
+			getCurrentTotalElem().innerText = total;
+
+			itemToDelete.remove(); //removes the selected list from the DOM
+		}
+
+		itemToDelete = null; //reset selected item to null so that another item can be stored inside in the future
+
+		deleteItemDialog.close();
+	}
+});
+
+backBtn.addEventListener("click", (e) => {
+	e.preventDefault();
+	localStorage.removeItem("list-id");
+	window.location.href = "./index.html";
 });

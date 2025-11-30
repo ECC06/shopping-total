@@ -56,6 +56,16 @@
         </form>
     </dialog>
 
+    <dialog id="delete-item-dialog">
+        <form id="delete-item-form">
+            <img src="" alt="A picture of an item that's about to be deleted" />
+            <h2>Delete this item?</h2>
+            <p>You can't undo this</p>
+            <button type="submit" id="confirm-delete-btn">Delete</button>
+            <button type="button" id="cancel-delete-item-btn">Cancel</button>
+        </form>
+    </dialog>
+
     <li class="list-item display-none">
         <div class="name-and-desc">
             <input type="checkbox" class="check" />
@@ -77,8 +87,8 @@
     </li>
 
     <header>
-        <a href="./index.html">&lt-</a>
-        <h1 class="display-none">[Title goes here]</h1>
+        <a href="./index.html" id="back-btn">&lt-</a>
+        <h1 class="display-none"></h1>
     </header>
 
     <main>

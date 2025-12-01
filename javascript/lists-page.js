@@ -32,6 +32,35 @@ export const lastElemOfList = () => listsCont.lastElementChild; //gets the curre
 //object that will contain info about each list item
 export const listObject = {};
 
+//handles some state when the user clicks on the open button
+listsCont.addEventListener("click", (e) => {
+	if (e.target.className === "open-btn") {
+		e.preventDefault();
+		const listItem = e.target.parentElement.parentElement;
+		const listId = listItem.id;
+		const listName = listItem.firstElementChild.firstElementChild.innerText;
+
+		updateLastOpened();
+
+		localStorage.setItem("list-id", listId); // Store the list id in local storage for use inside of the list
+		localStorage.setItem("list-name", listName); // Store the list's name in local storage for use inside of the list
+
+		window.location.href = "./list-page.html";
+
+		//update last opened in HTML
+
+		function updateLastOpened() {
+			const lastOpenedElem = listItem.firstElementChild.lastElementChild;
+
+			const objDataFromLocalStorage = listsArrFromLocalStorage().filter(
+				(obj) => obj.id === Number(listId),
+			)[0];
+
+			lastOpenedElem.innerText = `Last opened ${objDataFromLocalStorage.lastOpened}`;
+		}
+	}
+});
+
 //!READ lists in local storage
 //if local storage is not empty, this handler fetches the array of lists from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", () => {
@@ -157,21 +186,6 @@ listsCont.addEventListener("click", (e) => {
 	}
 });
 
-//!STORE LIST ID
-listsCont.addEventListener("click", (e) => {
-	if (e.target.className === "open-btn") {
-		e.preventDefault();
-		const listItem = e.target.parentElement.parentElement;
-		const listId = listItem.id;
-		const listName = listItem.firstElementChild.firstElementChild.innerText;
-
-		localStorage.setItem("list-id", listId); // Store the list id in local storage for use inside of the list
-		localStorage.setItem("list-name", listName); // Store the list's name in local storage for use inside of the list
-
-		window.location.href = "./list-page.html";
-	}
-});
-
 //handles deletion of lists
 deleteListForm.addEventListener("submit", (e) => {
 	e.preventDefault();
@@ -190,6 +204,9 @@ deleteListForm.addEventListener("submit", (e) => {
 		localStorage.setItem("lists", JSON.stringify(listsToKeepInStorage));
 		listToDelete.remove(); //removes the selected list from the DOM
 	}
+
+	localStorage.removeItem(`list-items-for-${listToDelete.id}`);
+	localStorage.removeItem(`list-total-for-${listToDelete.id}`);
 
 	listToDelete = null; //reset selected list to null so that another list can be stored inside in the future
 

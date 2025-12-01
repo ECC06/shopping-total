@@ -26,20 +26,6 @@ export function toggleListDisplay() {
 	listsAndAddButtonCont.classList.toggle("display-none"); //show lists
 }
 
-export function populateListItem(listObj) {
-	const listToPopulate = lastElemOfList();
-
-	listToPopulate.id = listObj.id; //populate the last list item with the id of the single list object in local storage
-
-	//extracts the elements containing the list element's name and date of creation from a the first div in the last list item
-	const [listNameElem, dateCreatedElem] =
-		listToPopulate.firstElementChild.children;
-
-	//updates the list element's name and date of creation
-	listNameElem.innerText = listObj.listName;
-	dateCreatedElem.innerText = listObj.dateOfCreation;
-}
-
 //returns true if the name the user types in has been stored by them previously. otherwise, it returns false
 export function userDuplicatedListTitle(userInput) {
 	if (localStorage.getItem("lists")) {
@@ -59,13 +45,13 @@ export function storeList() {
 	const listId = Math.floor(Math.random() * 900) + 100; //generates a number between 100 and 999 inclusive
 	listObject["id"] = listId;
 
-	//store date of creation
-	const dateObj = new Date();
-	const month = dateObj.toLocaleString("default", { month: "short" });
-	const day = dateObj.getDate();
-	const year = dateObj.getFullYear();
-	const dateOfCreation = `Created: ${month} ${day} ${year}`;
-	listObject["dateOfCreation"] = dateOfCreation;
+	const [day, month, year] = returnCurrentDate();
+
+	const dateCreatedText = `${month} ${day} ${year}`;
+	const dateLastOpenedText = `${month} ${day} ${year}`;
+
+	listObject["created"] = dateCreatedText;
+	listObject["lastOpened"] = dateLastOpenedText;
 
 	//creates a new array in local storage if it's empty, or updates the existing array if it's not
 	storeItemsInLocalStorage("lists", listObject);
@@ -82,4 +68,30 @@ export function addListToHTML(listObj) {
 	populateListItem(listObj); //update the newly added item with the right information
 
 	addListDialog.close();
+}
+
+export function populateListItem(listObj) {
+	const listToPopulate = lastElemOfList();
+
+	listToPopulate.id = listObj.id; //populate the last list item with the id of the single list object in local storage
+
+	//extracts the elements containing the list element's name and date of creation from a the first div in the last list item
+	const [listNameElem, dateCreatedElem, lastOpenedElem] =
+		listToPopulate.firstElementChild.children;
+
+	//updates the list element's name and date of creation
+	listNameElem.innerText = listObj.listName;
+	dateCreatedElem.innerText = `Created: ${listObj.created}`;
+	lastOpenedElem.innerText = `Last opened: ${listObj.lastOpened}`;
+}
+
+//returns an array containing the day, month and year at the time of invocation (e.g Dec 1 2025)
+function returnCurrentDate() {
+	//store date of creation
+	const dateObj = new Date();
+	const day = dateObj.getDate();
+	const month = dateObj.toLocaleString("default", { month: "short" });
+	const year = dateObj.getFullYear();
+
+	return [day, month, year];
 }

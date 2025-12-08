@@ -8,8 +8,9 @@ import {
 } from "./lists-page.js";
 
 import {
+	addNewItemToLocalStorage,
+	getLast,
 	listsArrFromLocalStorage,
-	storeItemsInLocalStorage,
 } from "./shared.js";
 
 //hides the default page and shows the list
@@ -17,6 +18,7 @@ export function toggleListDisplay() {
 	const listsAndAddButtonCont = document.querySelector(
 		"#lists-and-add-button-cont",
 	);
+
 	const noListsCont = document.querySelector("#no-lists-cont");
 	const header = document.querySelector("header");
 
@@ -48,13 +50,11 @@ export function storeList() {
 	const [day, month, year] = returnCurrentDate();
 
 	const dateCreatedText = `${month} ${day} ${year}`;
-	const dateLastOpenedText = `${month} ${day} ${year}`;
 
 	listObject["created"] = dateCreatedText;
-	listObject["lastOpened"] = dateLastOpenedText;
 
 	//creates a new array in local storage if it's empty, or updates the existing array if it's not
-	storeItemsInLocalStorage("lists", listObject);
+	addNewItemToLocalStorage("lists", listObject);
 }
 
 //adds a new item to the list container and populates it with the newly added list data (e.g the list name the user just typed in)
@@ -70,23 +70,33 @@ export function addListToHTML(listObj) {
 	addListDialog.close();
 }
 
+//populates the list item with it's id, name, date created and date last opened (if it exists)
 export function populateListItem(listObj) {
 	const listToPopulate = lastElemOfList();
+	const listNameElem = getLast(document.querySelectorAll(".list-name"));
+
+	const dateElements = getLast(
+		document.querySelectorAll(".created-and-opened-dates"),
+	);
+
+	const [dateCreatedElem, lastOpenedElem] = dateElements.children;
 
 	listToPopulate.id = listObj.id; //populate the last list item with the id of the single list object in local storage
 
-	//extracts the elements containing the list element's name and date of creation from a the first div in the last list item
-	const [listNameElem, dateCreatedElem, lastOpenedElem] =
-		listToPopulate.firstElementChild.children;
-
-	//updates the list element's name and date of creation
 	listNameElem.innerText = listObj.listName;
+
+	//below refers to the div: created-and-opened-dates, found inside the list item
+
 	dateCreatedElem.innerText = `Created: ${listObj.created}`;
-	lastOpenedElem.innerText = `Last opened: ${listObj.lastOpened}`;
+
+	//updates the HTML with the date the user last opened the list (if it exists in the list object. If it doesn't, the user hasn't opened the list yet)
+	if (listObj.lastOpened) {
+		lastOpenedElem.innerText = `Last opened: ${listObj.lastOpened}`;
+	}
 }
 
 //returns an array containing the day, month and year at the time of invocation (e.g Dec 1 2025)
-function returnCurrentDate() {
+export function returnCurrentDate() {
 	//store date of creation
 	const dateObj = new Date();
 	const day = dateObj.getDate();

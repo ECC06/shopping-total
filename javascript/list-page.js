@@ -25,6 +25,8 @@ const cancelAddItemBtn = document.querySelector("#cancel-add-item-btn");
 export const itemsCont = document.querySelector("#items-cont");
 export const formElements = Array.from(addItemsForm.elements);
 export const [nameInputElem, descInputElem, priceInputElem] = formElements;
+const addItemSubmitter = document.querySelector("#add-item-btn");
+const updateBtn = document.querySelector("#update-item-btn");
 
 const deleteItemDialog = document.querySelector("#delete-item-dialog");
 const deleteItemForm = document.querySelector("#delete-item-form");
@@ -42,6 +44,13 @@ let itemToDelete = null;
 
 export const itemsArrFromLocalStorage = () =>
 	JSON.parse(localStorage.getItem(listItemsForIdOfList));
+
+//first button that handles the opening of a form for adding list items
+firstAddItemBtn.addEventListener("click", (e) => {
+	clearForm();
+	updateBtn.classList.add("display-none"); //hide the update item button
+	addItemsDialog.showModal();
+});
 
 backBtn.addEventListener("click", (e) => {
 	e.preventDefault();
@@ -75,15 +84,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
 //!CREATE AND UPDATE A LIST
 
-//first button that handles the opening of a form for adding list items
-firstAddItemBtn.addEventListener("click", (e) => {
-	clearForm();
-	addItemsDialog.showModal();
-});
-
 //second button that handles the opening of a form for adding list items
 mainAddItemBtn.addEventListener("click", (e) => {
 	clearForm();
+	updateBtn.classList.add("display-none"); //hide the update button
+	addItemSubmitter.classList.remove("display-none"); //show the add item button
 	addItemsDialog.showModal();
 });
 
@@ -97,9 +102,7 @@ addItemsForm.addEventListener("submit", (e) => {
 			createNewItem();
 		}
 	} else if (e.submitter.id === "update-item-btn") {
-		if (!userDuplicatedItemName(nameInputElem.value)) {
-			updateItems();
-		}
+		updateItems();
 	}
 });
 
@@ -107,14 +110,11 @@ addItemsForm.addEventListener("submit", (e) => {
 itemsCont.addEventListener("dblclick", (e) => {
 	itemToUpdate.val = e.target;
 
-	const addBtn = document.querySelector("#add-item-btn");
-	const updateBtn = document.querySelector("#update-item-btn");
-
 	if (e.target.className === "list-item") {
 		addItemsDialog.showModal();
 
-		addBtn.classList.add("display-none"); //hide add button
-		updateBtn.classList.remove("display-none"); //update show button
+		updateBtn.classList.remove("display-none"); //show the update button
+		addItemSubmitter.classList.add("display-none"); //hide the add item button
 
 		populateInputs();
 
@@ -122,16 +122,19 @@ itemsCont.addEventListener("dblclick", (e) => {
 		function populateInputs() {
 			//get the name, description, and price elements from the list element
 			const nameAndDescriptionCont = itemToUpdate.val.children[0];
-			const priceAndQuantityCont = itemToUpdate.val.children[1];
+			const itemId = Number(itemToUpdate.val.id);
+			//the object in local storage that stores information for this list
+			const listObjInLocalStorage = itemsArrFromLocalStorage().filter(
+				(obj) => obj.id === itemId,
+			)[0];
 
+			//update all the inputs in the form with the correct information
 			const [input, nameLabel, descriptionElem] =
 				nameAndDescriptionCont.children;
-			const priceElem =
-				priceAndQuantityCont.firstElementChild.firstElementChild;
 
 			nameInputElem.value = nameLabel.innerText;
 			descInputElem.value = descriptionElem.innerText;
-			priceInputElem.value = priceElem.innerText;
+			priceInputElem.value = listObjInLocalStorage.price;
 		}
 	}
 });
@@ -241,12 +244,11 @@ deleteItemForm.addEventListener("submit", (e) => {
 		);
 
 		//subtracts the price of the deleted item from the total and updates the total both in local storage and the HTML
-		let total = JSON.parse(localStorage.getItem(listTotalForIdOfList));
-		const priceOfDeletedItem = Number(listDataInLocalStorage.price);
-		total -= priceOfDeletedItem;
+		const listTotal = JSON.parse(localStorage.getItem(listTotalForIdOfList));
+		const priceOfDeletedItem = Number(listDataInLocalStorage.total);
 
-		localStorage.setItem(listTotalForIdOfList, total);
-		getCurrentTotalElem().innerText = total;
+		localStorage.setItem(listTotalForIdOfList, listTotal);
+		getCurrentTotalElem().innerText = listTotal - priceOfDeletedItem;
 
 		itemToDelete.remove(); //removes the selected list from the DOM
 	}

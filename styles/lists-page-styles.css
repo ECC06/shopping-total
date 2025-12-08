@@ -1,16 +1,436 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap");
+
+/* *GLOBAL STYLES */
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Fredoka", sans-serif;
+}
+
+:root {
+	/* colors */
+	--tainted-sephia: hsl(43, 76%, 90%);
+	--red: hsl(0, 77%, 55%, 0.87);
+	--green: hsla(101, 100%, 38%, 0.87);
+	--light-grey: hsla(0, 0%, 86%, 0.99);
+
+	--font-size-4: 0.25rem;
+	--font-size-8: 0.5rem;
+	--font-size-12: 0.75rem;
+	--font-size-16: 1rem;
+	--font-size-20: 1.25rem;
+	--font-size-24: 1.5rem;
+	--font-size-28: 1.75rem;
+	--font-size-32: 2rem;
+	--font-size-36: 2.25rem;
+	--font-size-40: 2.5rem;
+	--font-size-44: 2.75rem;
+	--font-size-48: 3rem;
+	--font-size-52: 3.25rem;
+	--font-size-56: 3.5rem;
+	--font-size-60: 3.75rem;
+	--font-size-64: 4rem;
+	--font-size-68: 4.25rem;
+	--font-size-72: 4.5rem;
+	--font-size-76: 4.75rem;
+	--font-size-80: 5rem;
+	--font-size-84: 5.25rem;
+	--font-size-88: 5.5rem;
+	--font-size-92: 5.75rem;
+	--font-size-96: 6rem;
+	--font-size-100: 6.25rem;
+
+	/* font weight */
+	--regular: 450;
+	--semi-bold: 550;
+	--bold: 650;
+}
+
+/* !GENERAL STYLES */
+
+dialog {
+	/* center all dialog boxes */
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+
+	position: absolute; /* positioned relative to the viewport itself */
+	width: 80%;
+	border-radius: 20px;
+	border: none;
+	z-index: 2;
+}
+
+main {
+	margin-top: 100px;
+}
+
+/* !MULTIPLE SELECTIONS */
+
+html,
+body,
+main {
+	height: 100%;
+}
+
+/* center both ways */
+.no-lists-cont,
+.add-list-form,
+.update-name-form,
+.delete-list-form,
+.cancel-add-list-btn,
+header {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.add-list-form,
+.update-name-form,
+.delete-list-form {
+	width: 80%;
+	gap: 36px;
+	text-align: center;
+
+	/*center-ing this way because the parent (the dialog) element can't use display flex or grid so as not to mess with native defaults  */
+	position: relative;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.new-list-img,
+.delete-list-img {
+	width: 200px;
+	height: 200px;
+}
+
+/* input box base styles */
+.list-name-input,
+.new-name-input {
+	width: 100%;
+	padding: 8px 20px;
+	font-size: var(--font-size-24);
+	outline: 0;
+	background-color: var(--light-grey);
+	border: 0;
+	border-radius: 6px;
+	height: 65px;
+}
+
+/* button containers */
+.add-list-form-buttons,
+.update-list-buttons,
+.delete-list-buttons {
+	display: flex;
+	justify-content: space-between;
+	gap: 36px;
+	width: 100%;
+}
+
+/* buttons inside button containers */
+
+/* button base styles */
+.create-list-btn,
+.add-list-form-buttons > button,
+.open-and-delete-cont > * /*targets both <a/> and <button> inside*/,
+.update-list-buttons > button,
+.delete-list-buttons > button {
+	font-weight: var(--regular);
+	color: white;
+	padding: 16px 0;
+	border: 0;
+	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.add-list-form-buttons > button,
+.update-list-buttons > button,
+.delete-list-buttons > button {
+	font-size: var(--font-size-32);
+	width: 100%;
+	height: 65px;
+}
+
+.add-list-submitter,
+.change-name-submitter,
+.confirm-delete-btn {
+	background-color: var(--green);
+}
+
+.cancel-add-list-btn,
+.cancel-change-btn,
+.cancel-delete-btn {
+	background-color: var(--red);
+}
+
+/* !SPECIFIC STYLES */
+
+body {
+	background-color: var(--tainted-sephia);
+}
+
 header {
 	background-color: green;
 }
 
+.no-lists-cont {
+	max-width: 434px;
+	gap: 32px;
+	margin: 0 auto;
+}
+
+.create-list-btn {
+	font-size: var(--font-size-28);
+	background-color: var(--green);
+	width: 100%;
+}
+
+#no-lists-img {
+	width: 100%;
+}
+
+#no-lists-text {
+	font-weight: 600;
+	font-size: var(--font-size-44);
+}
+
+.add-list-dialog,
+.delete-list-dialog {
+	max-width: 1000px;
+	height: 630px;
+}
+
+.name-list-heading,
+.delete-list-heading {
+	font-size: var(--font-size-36);
+	font-weight: var(--bold);
+}
+
+header {
+	background-color: var(--green);
+	height: 100px;
+}
+
+h1 {
+	font-weight: var(--semi-bold);
+	font-size: var(--font-size-52);
+	color: white;
+}
+
+.lists-and-add-button-cont {
+	width: 80%;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.add-list-btn {
+	display: block;
+	margin-left: auto;
+	border-radius: 50%;
+	height: 60px;
+	width: 60px;
+	border: 0;
+}
+
+.lists-cont {
+	display: flex;
+	margin-top: 40px;
+	flex-direction: column;
+	gap: 28px;
+}
+
+.list-cont {
+	list-style: none;
+	background-color: white;
+	border-radius: 20px;
+	padding: 24px 20px;
+}
+
+/* both containers inside list content */
+.list-content {
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+}
+
+.name-and-edit {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+}
+
+.list-name {
+	font-weight: var(--bold);
+	font-size: var(--font-size-36);
+}
+
+.edit-btn {
+	border: 0;
+	background-color: transparent;
+	width: fit-content;
+}
+
+.list-item-bottom {
+	display: flex;
+	justify-content: space-between;
+	align-items: end;
+}
+
+.created-and-opened-dates {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	font-weight: var(--regular);
+}
+
+.created-and-opened-dates > .date {
+	font-size: 20px;
+	color: var(--red);
+}
+
+.open-and-delete-cont {
+	display: flex;
+	justify-content: end;
+	align-items: end;
+	gap: 20px;
+}
+
+.open-btn,
+.delete-btn {
+	width: 200px;
+	height: 50px;
+	font-size: var(--font-size-28);
+}
+
+.open-btn {
+	text-decoration: none;
+	background-color: var(--green);
+}
+
+.delete-btn {
+	background-color: var(--red);
+}
+
+.update-name-dialog {
+	max-width: 1000px;
+	height: 300px;
+}
+
+.delete-list-form > .delete-warning {
+	font-size: var(--font-size-24);
+	color: var(--red);
+}
+
+/* kept at the bottom so that no display style will override this one */
 .display-none {
 	display: none;
 }
 
-.list-cont {
-	margin-top: 40px;
-	border: 2px solid red;
+/* tablet size for list items */
+@media (max-width: 950px) {
+	/* list items styles */
+	.name-and-edit {
+		align-items: center;
+	}
+	.list-item-bottom {
+		flex-direction: column;
+		align-items: start;
+		gap: 28px;
+	}
+
+	.open-and-delete-cont {
+		width: 100%;
+	}
+
+	.open-btn,
+	.delete-btn {
+		width: 100%;
+	}
 }
 
-.list-cont {
-	list-style-type: none;
+/* !TABLET SIZE */
+@media (max-width: 768px) {
+	/* add items dialog */
+	dialog {
+		height: 95vh;
+	}
+
+	.new-list-img {
+		width: 150px;
+		height: 150px;
+	}
+
+	.list-name-input,
+	.new-name-input {
+		text-align: center;
+	}
+
+	.add-list-form-buttons,
+	.update-list-buttons,
+	.delete-list-buttons {
+		flex-direction: column;
+		width: 100%;
+	}
+}
+
+/* !SMALL DEVICES (MOST PHONES) */
+@media (max-width: 480px) {
+	.no-lists-cont {
+		width: 90%;
+	}
+	#no-lists-text {
+		font-size: var(--font-size-32);
+	}
+
+	.name-list-heading {
+		font-size: var(--font-size-28);
+	}
+
+	.list-name-input {
+		height: 55px;
+	}
+	.add-list-form-buttons {
+		gap: 16px;
+	}
+
+	.add-list-btn,
+	.cancel-add-list-btn {
+		height: 55px;
+		font-size: var(--font-size-24);
+	}
+
+	.list-cont {
+		padding-top: 60px;
+		padding-bottom: 24px;
+		position: relative;
+	}
+
+	.name-and-edit {
+		justify-content: center;
+	}
+
+	.list-item-bottom {
+		align-items: center;
+		text-align: center;
+	}
+
+	.list-name {
+		font-size: clamp(1.5rem, 5vw + 0.5rem, 2rem);
+	}
+
+	.edit-btn {
+		top: 10px;
+		right: 7px;
+		position: absolute;
+	}
+
+	.open-and-delete-cont {
+		flex-direction: column;
+	}
 }

@@ -2,6 +2,7 @@
 
 import {
 	addListToHTML,
+	returnCurrentDate,
 	storeList,
 	toggleListDisplay,
 	userDuplicatedListTitle,
@@ -39,24 +40,35 @@ listsCont.addEventListener("click", (e) => {
 		const listItem = e.target.parentElement.parentElement;
 		const listId = listItem.id;
 		const listName = listItem.firstElementChild.firstElementChild.innerText;
+		const lastOpenedElem = listItem.firstElementChild.lastElementChild;
 
-		updateLastOpened();
+		let objDataFromLocalStorage = null;
+
+		storeLastOpened();
+
+		//updating the HTML with the date the day the user last opened the list (found in local storage)
+		lastOpenedElem.innerText = `Last opened: ${objDataFromLocalStorage.lastOpened}`;
 
 		localStorage.setItem("list-id", listId); // Store the list id in local storage for use inside of the list
 		localStorage.setItem("list-name", listName); // Store the list's name in local storage for use inside of the list
 
-		window.location.href = "./list-page.html";
+		window.location.href = "./list-page.html"; //take the user to the page that stores their list items
 
-		//update last opened in HTML
+		//update last opened in local storage
+		function storeLastOpened() {
+			const listsFromLocalStorage = listsArrFromLocalStorage();
+			const [day, month, year] = returnCurrentDate();
+			const dateLastOpenedText = `${month} ${day} ${year}`;
 
-		function updateLastOpened() {
-			const lastOpenedElem = listItem.firstElementChild.lastElementChild;
+			for (const obj of listsFromLocalStorage) {
+				if (obj.id === Number(listId)) {
+					objDataFromLocalStorage = obj;
+					obj["lastOpened"] = dateLastOpenedText;
+					break;
+				}
+			}
 
-			const objDataFromLocalStorage = listsArrFromLocalStorage().filter(
-				(obj) => obj.id === Number(listId),
-			)[0];
-
-			lastOpenedElem.innerText = `Last opened ${objDataFromLocalStorage.lastOpened}`;
+			localStorage.setItem("lists", JSON.stringify(listsFromLocalStorage));
 		}
 	}
 });
@@ -123,15 +135,13 @@ cancelCreateListBtn.addEventListener("click", () => {
 listsCont.addEventListener("click", (e) => {
 	//?using event delegation instead of document.querySelectorAll because this button may not exist yet
 
-	if (e.target.className === "edit-btn") {
-		listToUpdateName = e.target.parentElement; //storing the parent list element of the edit button
+	if (e.target.tagName === "svg" || e.target.tagName === "path") {
+		listToUpdateName = e.target.closest(".list-cont");
 
 		//populates the input box with the list title that's already there
-		const divContainingListName = listToUpdateName.children[0];
+		const listName = listToUpdateName.querySelector(".list-name");
 
-		newNameInputElem.value =
-			divContainingListName.children["list-name"].innerText;
-
+		newNameInputElem.value = listName.innerText;
 		updateListNameDialog.showModal();
 	}
 });
@@ -159,8 +169,7 @@ updateListNameDialog.addEventListener("submit", (e) => {
 	localStorage.setItem("lists", JSON.stringify(storedList));
 
 	//updates the title of the list with the user's input
-	const divContainingListName = listToUpdateName.children[0];
-	const listNameElem = divContainingListName.children["list-name"];
+	const listNameElem = listToUpdateName.querySelector(".list-name");
 	listNameElem.innerText = newNameInputElem.value;
 
 	newNameInputElem.value = "";
@@ -178,10 +187,8 @@ cancelChangeBtn.addEventListener("click", (e) => {
 //handles when user clicks on "delete" button, using event delegation
 listsCont.addEventListener("click", (e) => {
 	//?using event delegation instead of document.querySelectorAll because this button may not exist yet in the DOM
-
-	listToDelete = e.target.parentElement.parentElement;
-
 	if (e.target.className === "delete-btn") {
+		listToDelete = e.target.closest(".list-cont");
 		deleteListDialog.showModal();
 	}
 });

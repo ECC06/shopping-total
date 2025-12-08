@@ -15,7 +15,7 @@ import {
 	priceInputElem,
 } from "./list-page.js";
 
-import { storeItemsInLocalStorage } from "./shared.js";
+import { addNewItemToLocalStorage } from "./shared.js";
 
 export function userDuplicatedItemName(userInput) {
 	if (localStorage.getItem(listItemsForIdOfList)) {
@@ -154,31 +154,72 @@ export function createNewItem() {
 
 export function updateItems() {
 	let listDataObj = null;
-	updateLocalStorage();
+	let totalIncrease = null;
+	let totalDecrease = null;
+
+	updateStoredItem();
+
 	populateItem(listDataObj, itemToUpdate.val); //update items in HTML
 
+	updateListTotal();
+
 	itemToUpdate.val = null; //clears this variable so that another item the user wants to update can take it's place
+
 	addItemsDialog.close();
 
 	//update items in local storage
-	function updateLocalStorage() {
+	function updateStoredItem() {
 		const storedList = itemsArrFromLocalStorage();
 
-		//iterate over the existing objects, and update the right objects
+		//iterate over the existing objects, and update the right object's name, description, price and total
 		for (const obj of storedList) {
 			if (Number(itemToUpdate.val.id) === obj.id) {
+				const formerTotal = obj.total;
+				const newPriceInput = Number(priceInputElem.value);
+				const newTotal = newPriceInput * obj.quantity;
+
+				//e.g former total was 40, now the new total is 60
+				if (formerTotal < newTotal) {
+					totalIncrease = newTotal - formerTotal;
+					//e.g former total was 60, now the new total is 40
+				} else if (formerTotal > newTotal) {
+					totalDecrease = formerTotal - newTotal;
+				}
+
 				listDataObj = obj;
 
 				//update the object with the user's input
 				obj.itemName = nameInputElem.value;
 				obj.description = descInputElem.value;
-				obj.price = Number(priceInputElem.value);
+				obj.price = newPriceInput;
+				obj.total = newTotal;
 				break;
 			}
 		}
 
 		//store the updated arr
 		localStorage.setItem(listItemsForIdOfList, JSON.stringify(storedList));
+	}
+
+	//updates the list total in HTML and in local storage
+	function updateListTotal() {
+		//update total in HTML
+		const currentListTotal = Number(getCurrentTotalElem().innerText);
+
+		//could be less verbose but...
+		if (totalIncrease) {
+			getCurrentTotalElem().innerText = currentListTotal + totalIncrease; //40 + 20 = 60
+			localStorage.setItem(
+				listTotalForIdOfList,
+				JSON.stringify(currentListTotal + totalIncrease),
+			);
+		} else if (totalDecrease) {
+			getCurrentTotalElem().innerText = currentListTotal - totalDecrease; //60 - 20 = 40
+			localStorage.setItem(
+				listTotalForIdOfList,
+				JSON.stringify(currentListTotal - totalDecrease),
+			);
+		}
 	}
 }
 
@@ -196,7 +237,7 @@ function storeFormInput() {
 
 	itemObject["total"] = Number(priceInputElem.value);
 
-	storeItemsInLocalStorage(listItemsForIdOfList, itemObject);
+	addNewItemToLocalStorage(listItemsForIdOfList, itemObject);
 }
 
 //adds a new item to the list container and populates it with the newly added list data (e.g the list name the user just typed in)

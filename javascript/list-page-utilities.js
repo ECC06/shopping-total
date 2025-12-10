@@ -1,24 +1,28 @@
 //...THIS FILE CONTAINS UTILITY FUNCTIONS in list-page.js (i.e, functions that are re-used multiple times)
 
 import {
+	addItemFormElements,
+	addItemSubmitter,
 	addItemsDialog,
+	addOrUpdateItemsForm,
+	buttonsCont,
 	descInputElem,
-	formElements,
 	getCurrentTotalElem,
 	itemObject,
 	itemsArrFromLocalStorage,
 	itemsCont,
 	itemToUpdate,
-	listItemsForIdOfList,
-	listTotalForIdOfList,
 	nameInputElem,
+	nameOfListItemsInLocalStorage,
+	nameOfListTotalInLocalStorage,
 	priceInputElem,
+	updateSubmitter,
 } from "./list-page.js";
 
 import { addNewItemToLocalStorage } from "./shared.js";
 
 export function userDuplicatedItemName(userInput) {
-	if (localStorage.getItem(listItemsForIdOfList)) {
+	if (localStorage.getItem(nameOfListItemsInLocalStorage)) {
 		for (const obj of itemsArrFromLocalStorage()) {
 			if (userInput.toLowerCase() === obj["itemName"].toLowerCase()) {
 				alert(
@@ -33,76 +37,86 @@ export function userDuplicatedItemName(userInput) {
 
 export function manipulateQuantity(buttonElem) {
 	let originalPrice = null;
+	const listElem = buttonElem.closest(".list-item");
 
-	const selectedListId = Number(
-		buttonElem.parentElement.parentElement.parentElement.id,
-	);
+	const selectedListId = Number(listElem.id);
 
 	//go into local storage and get the original price of the item using the id in the HTML
-	itemsArrFromLocalStorage().forEach((obj) => {
+
+	for (const obj of itemsArrFromLocalStorage()) {
 		if (obj.id === selectedListId) {
 			originalPrice = obj.price; //update the "originalPrice" global variable
+			break;
 		}
-	});
+	}
 
-	const priceElem =
-		buttonElem.parentElement.previousElementSibling.firstElementChild;
-	const quantityElem = buttonElem.parentElement.children[1];
+	const priceElem = listElem.querySelector(".price");
+	const quantityElem = listElem.querySelector(".quantity");
 
-	const currentPrice = Number(priceElem.innerText);
+	const itemTotal = Number(priceElem.innerText);
 	let listTotal = Number(getCurrentTotalElem().innerText);
 
-	let updatedPrice = null;
+	let newItemTotal = null;
 	let updatedQuantityNum = null;
 
 	//update the price, quantity and total variables
 	updateVariables();
 
 	//update the price and quantity in HTML
-	quantityElem.innerText = updatedQuantityNum; //null
-	priceElem.innerText = updatedPrice; //null
+	quantityElem.innerText = updatedQuantityNum;
+	priceElem.innerText = newItemTotal;
 
 	//update the total in HTML
 	getCurrentTotalElem().innerText = listTotal;
 
 	//update the price, quantity and total of the item in local storage
-	updateStoredPriceAndQuantity(
+	updateVariablesInLocalStorage(
 		selectedListId,
 		updatedQuantityNum,
-		updatedPrice,
+		newItemTotal,
+		listTotal,
 	);
 
 	function updateVariables() {
 		if (buttonElem.className === "plus-btn") {
-			updatedQuantityNum = Number(quantityElem.innerText) + 1; //2
-			updatedPrice = currentPrice + originalPrice; //adding on to the price //100
-			listTotal += originalPrice; //150
+			updatedQuantityNum = Number(quantityElem.innerText) + 1;
+			newItemTotal = itemTotal + originalPrice;
+			listTotal += originalPrice;
 		} else if (buttonElem.className === "minus-btn") {
 			updatedQuantityNum = Number(quantityElem.innerText) - 1;
-			updatedPrice = currentPrice - originalPrice;
+			newItemTotal = itemTotal - originalPrice;
 			listTotal -= originalPrice;
 		}
-
-		localStorage.setItem(listTotalForIdOfList, listTotal);
 	}
 }
 
 //!ud
-//updates the price and quantity of an item in local storage using the items' id, found the in HTML
-function updateStoredPriceAndQuantity(listId, newQuantity, newTotal) {
+//updates the items' total price and quantity in local storage using the items' id
+function updateVariablesInLocalStorage(
+	listId,
+	newQuantity,
+	newItemTotal,
+	newListTotal,
+) {
 	const storedItems = itemsArrFromLocalStorage();
-	if (localStorage.getItem(listItemsForIdOfList)) {
-		//updates the actual price in local storage
+	if (localStorage.getItem(nameOfListItemsInLocalStorage)) {
+		//updates update the quantity and total in local storage
 		for (const obj of storedItems) {
 			if (obj.id === listId) {
 				obj.quantity = newQuantity;
-				obj.total = newTotal;
+				obj.total = newItemTotal;
 				break;
 			}
 		}
 
-		localStorage.setItem(listItemsForIdOfList, JSON.stringify(storedItems));
+		localStorage.setItem(
+			nameOfListItemsInLocalStorage,
+			JSON.stringify(storedItems),
+		);
 	}
+
+	//update the list total in local storage
+	localStorage.setItem(nameOfListTotalInLocalStorage, newListTotal);
 }
 
 //looks into local storage and marks any items in the HTML that the user has previously marked with a check
@@ -118,9 +132,9 @@ export function checkPreviouslyCheckedItems() {
 	});
 
 	//iterate over all the list items, and any that have an id in the "idsOfCheckedElements" array should be checked
-	listItems.forEach((item) => {
-		if (idsOfCheckedElements.includes(Number(item.id))) {
-			const checkboxInput = item.firstElementChild.firstElementChild;
+	listItems.forEach((itemElem) => {
+		if (idsOfCheckedElements.includes(Number(itemElem.id))) {
+			const checkboxInput = itemElem.querySelector(".check");
 			checkboxInput.checked = true;
 		}
 	});
@@ -136,7 +150,7 @@ export function createNewItem() {
 	currentTotal += Number(priceInputElem.value);
 
 	//updates the list total in the local storage
-	localStorage.setItem(listTotalForIdOfList, currentTotal);
+	localStorage.setItem(nameOfListTotalInLocalStorage, currentTotal);
 
 	//updates the list total in the HTML
 	totalElem.innerText = currentTotal;
@@ -152,74 +166,121 @@ export function createNewItem() {
 	addItemsDialog.close();
 }
 
+export function displayUpdateForm(event) {
+	const listItemClicked = event.target.closest(".list-item"); // the closest list item to the element that was clicked
+
+	itemToUpdate.item = listItemClicked; // the global variable: "itemToUpdate.item" is updated so it can be used in the updateItem() function and the submit event listener for updating the form.
+
+	// if the element that received the event is able to traverse upwards and find a list item,
+	if (listItemClicked) {
+		displayOnlyUpdateButton();
+		populateInputs();
+
+		function displayOnlyUpdateButton() {
+			// only add a new update button but ONLY if it's not already inside the buttons container
+			if (!addOrUpdateItemsForm.querySelector("#update-item-submitter")) {
+				const clonedUpdateBtn = updateSubmitter.cloneNode(true);
+				buttonsCont.prepend(clonedUpdateBtn);
+
+				clonedUpdateBtn.classList.toggle("display-none"); //show the update button
+				addItemSubmitter.style.display = "none"; //hide the add item button
+			}
+			addItemsDialog.showModal();
+		}
+		//populate the update form with the current data in the list element
+		function populateInputs() {
+			const listItemId = Number(listItemClicked.id);
+
+			const listItemInfoInLocalStorage = itemsArrFromLocalStorage().find(
+				(obj) => obj.id === listItemId,
+			);
+
+			const nameLabel = listItemClicked.querySelector(".item-name");
+			const descriptionElem = listItemClicked.querySelector(".description");
+
+			nameInputElem.value = nameLabel.innerText;
+			descInputElem.value = descriptionElem.innerText;
+			priceInputElem.value = listItemInfoInLocalStorage.price;
+		}
+	}
+}
+
 export function updateItems() {
+	const storedList = itemsArrFromLocalStorage();
+
 	let listDataObj = null;
 	let totalIncrease = null;
 	let totalDecrease = null;
 
-	updateStoredItem();
-
-	populateItem(listDataObj, itemToUpdate.val); //update items in HTML
-
-	updateListTotal();
-
-	itemToUpdate.val = null; //clears this variable so that another item the user wants to update can take it's place
-
-	addItemsDialog.close();
-
 	//update items in local storage
-	function updateStoredItem() {
-		const storedList = itemsArrFromLocalStorage();
 
-		//iterate over the existing objects, and update the right object's name, description, price and total
-		for (const obj of storedList) {
-			if (Number(itemToUpdate.val.id) === obj.id) {
-				const formerTotal = obj.total;
-				const newPriceInput = Number(priceInputElem.value);
-				const newTotal = newPriceInput * obj.quantity;
+	for (const obj of storedList) {
+		if (Number(itemToUpdate.item.id) === obj.id) {
+			const formerTotal = obj.total; // 60
+			const newPriceInput = Number(priceInputElem.value);
+			const newTotal = newPriceInput * obj.quantity;
 
-				//e.g former total was 40, now the new total is 60
-				if (formerTotal < newTotal) {
-					totalIncrease = newTotal - formerTotal;
-					//e.g former total was 60, now the new total is 40
-				} else if (formerTotal > newTotal) {
-					totalDecrease = formerTotal - newTotal;
-				}
-
-				listDataObj = obj;
-
-				//update the object with the user's input
-				obj.itemName = nameInputElem.value;
-				obj.description = descInputElem.value;
-				obj.price = newPriceInput;
-				obj.total = newTotal;
-				break;
+			if (formerTotal < newTotal) {
+				totalIncrease = newTotal - formerTotal;
+			} else if (formerTotal > newTotal) {
+				totalDecrease = formerTotal - newTotal;
 			}
-		}
 
-		//store the updated arr
-		localStorage.setItem(listItemsForIdOfList, JSON.stringify(storedList));
+			listDataObj = obj;
+
+			//update the object with the user's input
+			obj.itemName = nameInputElem.value;
+			obj.description = descInputElem.value;
+			obj.price = newPriceInput;
+			obj.total = newTotal;
+			break;
+		}
 	}
 
-	//updates the list total in HTML and in local storage
-	function updateListTotal() {
-		//update total in HTML
-		const currentListTotal = Number(getCurrentTotalElem().innerText);
+	//store the updated arr
+	localStorage.setItem(
+		nameOfListItemsInLocalStorage,
+		JSON.stringify(storedList),
+	);
 
-		//could be less verbose but...
-		if (totalIncrease) {
-			getCurrentTotalElem().innerText = currentListTotal + totalIncrease; //40 + 20 = 60
-			localStorage.setItem(
-				listTotalForIdOfList,
-				JSON.stringify(currentListTotal + totalIncrease),
-			);
-		} else if (totalDecrease) {
-			getCurrentTotalElem().innerText = currentListTotal - totalDecrease; //60 - 20 = 40
-			localStorage.setItem(
-				listTotalForIdOfList,
-				JSON.stringify(currentListTotal - totalDecrease),
-			);
-		}
+	populateItem(listDataObj, itemToUpdate.item); //update items in HTML
+
+	updateListTotal(totalIncrease, totalDecrease); //update list total in local storage and html
+
+	itemToUpdate.item = null; //clears this variable so that another item the user wants to update can take it's place
+
+	addItemsDialog.close();
+}
+
+//updates the list total in HTML and in local storage
+function updateListTotal(increase, decrease) {
+	//update total in HTML
+	const currentListTotal = Number(getCurrentTotalElem().innerText);
+
+	//could be less verbose but...
+	if (increase) {
+		getCurrentTotalElem().innerText = currentListTotal + increase; //40 + 20 = 60
+		localStorage.setItem(
+			nameOfListTotalInLocalStorage,
+			JSON.stringify(currentListTotal + increase),
+		);
+	} else if (decrease) {
+		getCurrentTotalElem().innerText = currentListTotal - decrease; //60 - 20 = 40
+		localStorage.setItem(
+			nameOfListTotalInLocalStorage,
+			JSON.stringify(currentListTotal - decrease),
+		);
+	}
+}
+
+export function removeUpdateButtonIfItExists() {
+	const updateSubmitterInButtonsCont = buttonsCont.querySelector(
+		"#update-item-submitter",
+	);
+	//removes the update button from the button container (so that at all times the button container has only ONE submitter)
+	if (updateSubmitterInButtonsCont) {
+		buttonsCont.removeChild(updateSubmitterInButtonsCont);
+		addItemSubmitter.style.display = "flex"; //show the add button because at this point the display is set to "none"
 	}
 }
 
@@ -237,7 +298,7 @@ function storeFormInput() {
 
 	itemObject["total"] = Number(priceInputElem.value);
 
-	addNewItemToLocalStorage(listItemsForIdOfList, itemObject);
+	addNewItemToLocalStorage(nameOfListItemsInLocalStorage, itemObject);
 }
 
 //adds a new item to the list container and populates it with the newly added list data (e.g the list name the user just typed in)
@@ -260,17 +321,14 @@ export function populateItem(listItemObj, itemToPopulate) {
 	itemToPopulate.id = listItemObj.id; //populate the last list item with the id of the single list object in local storage
 
 	//populate existing list item
-	const nameAndDescriptionCont = itemToPopulate.children[0];
-	const priceAndQuantityCont = itemToPopulate.children[1];
+	const itemName = itemToPopulate.querySelector(".item-name");
+	const descriptionElem = itemToPopulate.querySelector(".description");
+	const priceElem = itemToPopulate.querySelector(".price");
+	const quantityElem = itemToPopulate.querySelector(".quantity");
 
-	const [input, nameLabel, descriptionElem] = nameAndDescriptionCont.children;
-	nameLabel.innerText = listItemObj.itemName;
+	itemName.innerText = listItemObj.itemName;
 	descriptionElem.innerText = listItemObj.description;
-
-	const priceElem = priceAndQuantityCont.firstElementChild.firstElementChild;
 	priceElem.innerText = listItemObj.total;
-
-	const quantityElem = priceAndQuantityCont.children[1].children[1];
 	quantityElem.innerText = listItemObj.quantity;
 }
 
@@ -285,7 +343,7 @@ export function toggle() {
 
 export function clearForm() {
 	//clears the former input in the form data for a fresh, clean, form
-	formElements.forEach((element) => {
+	addItemFormElements.forEach((element) => {
 		if (element.className === "item-data-input") {
 			element.value = "";
 		}

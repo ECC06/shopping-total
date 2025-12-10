@@ -5,28 +5,35 @@ import {
 	checkPreviouslyCheckedItems,
 	clearForm,
 	createNewItem,
+	displayUpdateForm,
 	manipulateQuantity,
+	removeUpdateButtonIfItExists,
 	toggle,
 	updateItems,
 	userDuplicatedItemName,
 } from "./list-page-utilities.js";
 
 const listId = localStorage.getItem("list-id");
-export const listItemsForIdOfList = `list-items-for-${listId}`;
-export const listTotalForIdOfList = `list-total-for-${listId}`;
+export const nameOfListItemsInLocalStorage = `list-items-for-${listId}`;
+export const nameOfListTotalInLocalStorage = `list-total-for-${listId}`;
 
 export const h1 = document.querySelector("h1");
+
+// add/update items dialog variables
 export const addItemsDialog = document.querySelector("#add-items-dialog");
-const firstAddItemBtn = document.querySelector("#first-add-item-btn");
-const closeAddItemBtn = document.querySelector("#close-add-item-form");
-const mainAddItemBtn = document.querySelector("#main-add-item-btn");
-const addItemsForm = document.querySelector("#add-items-form");
+export const addOrUpdateItemsForm = document.querySelector("#add-items-form");
+const closeAddItemForm = document.querySelector("#close-add-item-form");
 const cancelAddItemBtn = document.querySelector("#cancel-add-item-btn");
+export const buttonsCont = document.querySelector(".item-form-buttons");
+export const addItemSubmitter = document.querySelector("#add-item-submitter");
+export const updateSubmitter = document.querySelector("#update-item-submitter");
+
+const firstAddItemBtn = document.querySelector("#first-add-item-btn");
+const mainAddItemBtn = document.querySelector("#main-add-item-btn");
 export const itemsCont = document.querySelector("#items-cont");
-export const formElements = Array.from(addItemsForm.elements);
-export const [nameInputElem, descInputElem, priceInputElem] = formElements;
-const addItemSubmitter = document.querySelector("#add-item-btn");
-const updateBtn = document.querySelector("#update-item-btn");
+export const addItemFormElements = Array.from(addOrUpdateItemsForm.elements);
+export const [nameInputElem, descInputElem, priceInputElem] =
+	addItemFormElements;
 
 const deleteItemDialog = document.querySelector("#delete-item-dialog");
 const deleteItemForm = document.querySelector("#delete-item-form");
@@ -39,18 +46,11 @@ export const itemObject = {};
 
 export const getCurrentTotalElem = () => document.querySelector("#total");
 
-export const itemToUpdate = { val: null };
+export const itemToUpdate = { item: null };
 let itemToDelete = null;
 
 export const itemsArrFromLocalStorage = () =>
-	JSON.parse(localStorage.getItem(listItemsForIdOfList));
-
-//first button that handles the opening of a form for adding list items
-firstAddItemBtn.addEventListener("click", (e) => {
-	clearForm();
-	updateBtn.classList.add("display-none"); //hide the update item button
-	addItemsDialog.showModal();
-});
+	JSON.parse(localStorage.getItem(nameOfListItemsInLocalStorage));
 
 backBtn.addEventListener("click", (e) => {
 	e.preventDefault();
@@ -67,14 +67,15 @@ backBtn.addEventListener("click", (e) => {
 document.addEventListener("DOMContentLoaded", (e) => {
 	h1.innerText = localStorage.getItem("list-name");
 
-	if (localStorage.getItem(listItemsForIdOfList)) {
+	if (localStorage.getItem(nameOfListItemsInLocalStorage)) {
 		itemsArrFromLocalStorage().forEach((obj) => {
 			//each iteration appends a clone of listCont, instead of listCont itself, so that it doesn't get moved every time appendChild is called
 			addItemToHTML(obj);
 		});
 
-		getCurrentTotalElem().innerText =
-			localStorage.getItem(listTotalForIdOfList); //update the list total
+		getCurrentTotalElem().innerText = localStorage.getItem(
+			nameOfListTotalInLocalStorage,
+		); //update the list total
 
 		checkPreviouslyCheckedItems();
 
@@ -84,69 +85,73 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
 //!CREATE AND UPDATE A LIST
 
-//second button that handles the opening of a form for adding list items
-mainAddItemBtn.addEventListener("click", (e) => {
+//first button that handles the opening of a form for adding list items
+firstAddItemBtn.addEventListener("click", (e) => {
 	clearForm();
-	updateBtn.classList.add("display-none"); //hide the update button
-	addItemSubmitter.classList.remove("display-none"); //show the add item button
 	addItemsDialog.showModal();
 });
 
-//handles the submission of list data, e.g the name, description, price, etc
-addItemsForm.addEventListener("submit", (e) => {
-	e.preventDefault();
+//second button that handles the opening of a form for adding list items
+mainAddItemBtn.addEventListener("click", (e) => {
+	clearForm();
+	addItemsDialog.showModal();
+});
 
-	//runs based on a button
-	if (e.submitter.id === "add-item-btn") {
-		if (!userDuplicatedItemName(nameInputElem.value)) {
-			createNewItem();
-		}
-	} else if (e.submitter.id === "update-item-btn") {
-		updateItems();
+//displays the form for user to edit, with the inputs populated with the list information
+itemsCont.addEventListener("dblclick", (e) => {
+	const doNotRespondToDbClick = [
+		"check",
+		"plus-btn",
+		"minus-btn",
+		"quantity",
+		"rect",
+		"svg",
+		"path",
+	];
+
+	// if an element's is not found inside "doNotRespondToDbClick", then it can respond to the double click. We use and because both sides need to be false for the if statement to avoid running
+	if (
+		!doNotRespondToDbClick.includes(e.target.tagName) &&
+		!doNotRespondToDbClick.includes(e.target.className)
+	) {
+		displayUpdateForm(e);
 	}
 });
 
-//displays the form for user to edit
-itemsCont.addEventListener("dblclick", (e) => {
-	itemToUpdate.val = e.target;
-
-	if (e.target.className === "list-item") {
-		addItemsDialog.showModal();
-
-		updateBtn.classList.remove("display-none"); //show the update button
-		addItemSubmitter.classList.add("display-none"); //hide the add item button
-
-		populateInputs();
-
-		//populate the update form with the current data in the list element
-		function populateInputs() {
-			//get the name, description, and price elements from the list element
-			const nameAndDescriptionCont = itemToUpdate.val.children[0];
-			const itemId = Number(itemToUpdate.val.id);
-			//the object in local storage that stores information for this list
-			const listObjInLocalStorage = itemsArrFromLocalStorage().filter(
-				(obj) => obj.id === itemId,
-			)[0];
-
-			//update all the inputs in the form with the correct information
-			const [input, nameLabel, descriptionElem] =
-				nameAndDescriptionCont.children;
-
-			nameInputElem.value = nameLabel.innerText;
-			descInputElem.value = descriptionElem.innerText;
-			priceInputElem.value = listObjInLocalStorage.price;
-		}
+//displays the form for user to edit, with the inputs populated with the list information
+itemsCont.addEventListener("click", (e) => {
+	if (
+		e.target.classList.contains("edit-item-btn") ||
+		e.target.classList.contains("edit-item-svg")
+	) {
+		displayUpdateForm(e);
 	}
 });
 
 //handles the closing the form
-closeAddItemBtn.addEventListener("click", (e) => {
+closeAddItemForm.addEventListener("click", (e) => {
+	removeUpdateButtonIfItExists();
 	addItemsDialog.close();
 });
 
-//handles the cancellation of adding list data, by closing the form
+//closes the form for adding/updating items
 cancelAddItemBtn.addEventListener("click", (e) => {
+	removeUpdateButtonIfItExists();
 	addItemsDialog.close();
+});
+
+//handles the submission of list data, e.g the name, description, price, etc
+addOrUpdateItemsForm.addEventListener("submit", (e) => {
+	e.preventDefault();
+
+	//runs based on a button
+	if (e.submitter.id === "add-item-submitter") {
+		if (!userDuplicatedItemName(nameInputElem.value)) {
+			createNewItem();
+		}
+	} else if (e.submitter.id === "update-item-submitter") {
+		updateItems();
+	}
 });
 
 //stores the checked state of an item in local storage
@@ -155,8 +160,7 @@ itemsCont.addEventListener("change", (e) => {
 	if (e.target.className === "check") {
 		const check = e.target;
 
-		const selectedListId = Number(check.parentElement.parentElement.id);
-
+		const selectedListId = Number(check.closest(".list-item").id);
 		//list that will be used to update local storage
 		const list = itemsArrFromLocalStorage();
 
@@ -172,7 +176,7 @@ itemsCont.addEventListener("change", (e) => {
 			}
 		}
 
-		localStorage.setItem(listItemsForIdOfList, JSON.stringify(list));
+		localStorage.setItem(nameOfListItemsInLocalStorage, JSON.stringify(list));
 	}
 });
 
@@ -180,25 +184,31 @@ itemsCont.addEventListener("change", (e) => {
 //updates the items' quantity when the user clicks on the plus button (+)
 itemsCont.addEventListener("click", (e) => {
 	//using event delegation to capture click events on the + button
-	if (e.target.className === "plus-btn") {
-		const plusBtn = e.target;
 
+	//?when the classList is requested on an svg element or it's children, it returns for example: DOMTokenList ['plus-btn-svg', value: 'plus-btn-svg']
+
+	if (
+		e.target.classList.contains("plus-btn") ||
+		e.target.classList["value"] === "plus-btn-svg"
+	) {
+		const plusBtn = e.target.closest(".plus-btn");
 		//increases the quantity and total of the item, both on screen and in local storage
 		manipulateQuantity(plusBtn);
 	}
 });
 
-//updates the items' quantity when the user clicks on the minus button (-)
+// updates the items' quantity when the user clicks on the minus button (-)
 itemsCont.addEventListener("click", (e) => {
-	//using event delegation to capture click events on the - button
-	if (e.target.className === "minus-btn") {
-		const minusBtn = e.target;
-
-		const quantity = minusBtn.nextElementSibling.innerText;
-
-		//doesn't allow user to reduce the quantity below one
+	// using event delegation to capture click events on the - button
+	if (
+		e.target.classList.contains("minus-btn") ||
+		e.target.classList.contains("minus-btn-svg")
+	) {
+		const minusBtn = e.target.closest(".minus-btn");
+		const quantityCont = e.target.closest(".quantity-controls");
+		const quantity = Number(quantityCont.querySelector(".quantity").innerText);
 		if (quantity > 1) {
-			//increases the quantity of the item on screen and in local storage
+			// //increases the quantity and total of the item, both on screen and in local storage
 			manipulateQuantity(minusBtn);
 		}
 	}
@@ -208,8 +218,11 @@ itemsCont.addEventListener("click", (e) => {
 //when the user clicks on the "delete" button on the list, this displays the form that allows a user to confirm their deletion
 itemsCont.addEventListener("click", (e) => {
 	//using event delegation to capture click events on the delete button
-	if (e.target.className === "delete-btn") {
-		itemToDelete = e.target.parentElement;
+	if (
+		e.target.classList.contains("open-delete-dialog") ||
+		e.target.classList.contains("delete-item-svg") //handles any svgs that may receive the event
+	) {
+		itemToDelete = e.target.closest(".list-item");
 		deleteItemDialog.showModal();
 	}
 });
@@ -218,44 +231,49 @@ itemsCont.addEventListener("click", (e) => {
 deleteItemForm.addEventListener("submit", (e) => {
 	e.preventDefault();
 
-	let listDataInLocalStorage = null;
+	let listObj = null;
 
 	const listOfItems = itemsArrFromLocalStorage();
 
-	//a list that filters out the item the user wants to delete, and remains the one they want to keep
+	//a list that filters out the item the user wants to delete, and remains the ones they want to keep
 	const itemsToKeepInStorage = listOfItems.filter((obj) => {
-		listDataInLocalStorage = obj;
+		listObj = obj;
 		return Number(itemToDelete.id) !== obj.id;
 	});
 
 	//if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new list in local storage, with the selected list deleted
 	if (itemsToKeepInStorage.length === 0) {
-		localStorage.removeItem(listItemsForIdOfList);
+		localStorage.removeItem(nameOfListItemsInLocalStorage);
 		itemsCont.innerHTML = ""; //remove the list elements from the HTML as well
-		localStorage.removeItem(listTotalForIdOfList);
-
 		getCurrentTotalElem().innerText = 0;
-		toggle();
+		toggle(); //display the "no lists container"
 	} else {
-		// debugger;
 		localStorage.setItem(
-			listItemsForIdOfList,
+			nameOfListItemsInLocalStorage,
 			JSON.stringify(itemsToKeepInStorage),
 		);
-
-		//subtracts the price of the deleted item from the total and updates the total both in local storage and the HTML
-		const listTotal = JSON.parse(localStorage.getItem(listTotalForIdOfList));
-		const priceOfDeletedItem = Number(listDataInLocalStorage.total);
-
-		localStorage.setItem(listTotalForIdOfList, listTotal);
-		getCurrentTotalElem().innerText = listTotal - priceOfDeletedItem;
-
-		itemToDelete.remove(); //removes the selected list from the DOM
 	}
+	updateTotal();
 
 	itemToDelete = null; //reset selected item to null so that another item can be stored inside in the future
 
 	deleteItemDialog.close();
+
+	//subtracts the price of the deleted item from the total and updates the total both in local storage and the HTML
+
+	// update total
+	function updateTotal() {
+		const currentListTotal = JSON.parse(
+			localStorage.getItem(nameOfListTotalInLocalStorage),
+		);
+		const priceOfDeletedItem = Number(listObj.total);
+		const newTotal = currentListTotal - priceOfDeletedItem;
+
+		localStorage.setItem(nameOfListTotalInLocalStorage, newTotal);
+		getCurrentTotalElem().innerText = newTotal;
+
+		itemToDelete.remove(); //removes the selected list from the DOM
+	}
 });
 
 //closes the form that allows a user to confirm whether they are deleting an item

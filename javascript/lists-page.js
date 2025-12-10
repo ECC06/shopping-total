@@ -37,10 +37,10 @@ export const listObject = {};
 listsCont.addEventListener("click", (e) => {
 	if (e.target.className === "open-btn") {
 		e.preventDefault();
-		const listItem = e.target.parentElement.parentElement;
-		const listId = listItem.id;
-		const listName = listItem.firstElementChild.firstElementChild.innerText;
-		const lastOpenedElem = listItem.firstElementChild.lastElementChild;
+		const listCont = e.target.closest(".list-cont");
+		const listId = listCont.id;
+		const listName = listCont.querySelector(".list-name").innerText;
+		const lastOpenedElem = listCont.querySelector("#last-opened");
 
 		let objDataFromLocalStorage = null;
 
@@ -135,7 +135,7 @@ cancelCreateListBtn.addEventListener("click", () => {
 listsCont.addEventListener("click", (e) => {
 	//?using event delegation instead of document.querySelectorAll because this button may not exist yet
 
-	if (e.target.tagName === "svg" || e.target.tagName === "path") {
+	if (e.target.classList.contains("edit-button-icon")) {
 		listToUpdateName = e.target.closest(".list-cont");
 
 		//populates the input box with the list title that's already there
@@ -187,7 +187,7 @@ cancelChangeBtn.addEventListener("click", (e) => {
 //handles when user clicks on "delete" button, using event delegation
 listsCont.addEventListener("click", (e) => {
 	//?using event delegation instead of document.querySelectorAll because this button may not exist yet in the DOM
-	if (e.target.className === "delete-btn") {
+	if (e.target.className === "delete-list-btn") {
 		listToDelete = e.target.closest(".list-cont");
 		deleteListDialog.showModal();
 	}

@@ -349,3 +349,15 @@ export function clearForm() {
 		}
 	});
 }
+
+//update the list's total in the HTML and local storage
+export function updateTotal(listDataObj) {
+	const currentListTotal = JSON.parse(
+		localStorage.getItem(nameOfListTotalInLocalStorage),
+	);
+	const priceOfDeletedItem = Number(listDataObj.total);
+	const newTotal = currentListTotal - priceOfDeletedItem;
+
+	localStorage.setItem(nameOfListTotalInLocalStorage, newTotal);
+	getCurrentTotalElem().innerText = newTotal;
+}

@@ -10,6 +10,7 @@ import {
 	removeUpdateButtonIfItExists,
 	toggle,
 	updateItems,
+	updateTotal,
 	userDuplicatedItemName,
 } from "./list-page-utilities.js";
 
@@ -231,15 +232,16 @@ itemsCont.addEventListener("click", (e) => {
 deleteItemForm.addEventListener("submit", (e) => {
 	e.preventDefault();
 
-	let listObj = null;
-
 	const listOfItems = itemsArrFromLocalStorage();
 
 	//a list that filters out the item the user wants to delete, and remains the ones they want to keep
-	const itemsToKeepInStorage = listOfItems.filter((obj) => {
-		listObj = obj;
-		return Number(itemToDelete.id) !== obj.id;
-	});
+	const itemsToKeepInStorage = listOfItems.filter(
+		(obj) => Number(itemToDelete.id) !== obj.id,
+	);
+
+	const listObjInLocalStorage = listOfItems.find(
+		(obj) => Number(itemToDelete.id) === obj.id,
+	);
 
 	//if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new list in local storage, with the selected list deleted
 	if (itemsToKeepInStorage.length === 0) {
@@ -252,28 +254,14 @@ deleteItemForm.addEventListener("submit", (e) => {
 			nameOfListItemsInLocalStorage,
 			JSON.stringify(itemsToKeepInStorage),
 		);
+		itemToDelete.remove(); //removes the selected list from the DOM
 	}
-	updateTotal();
+
+	updateTotal(listObjInLocalStorage);
 
 	itemToDelete = null; //reset selected item to null so that another item can be stored inside in the future
 
 	deleteItemDialog.close();
-
-	//subtracts the price of the deleted item from the total and updates the total both in local storage and the HTML
-
-	// update total
-	function updateTotal() {
-		const currentListTotal = JSON.parse(
-			localStorage.getItem(nameOfListTotalInLocalStorage),
-		);
-		const priceOfDeletedItem = Number(listObj.total);
-		const newTotal = currentListTotal - priceOfDeletedItem;
-
-		localStorage.setItem(nameOfListTotalInLocalStorage, newTotal);
-		getCurrentTotalElem().innerText = newTotal;
-
-		itemToDelete.remove(); //removes the selected list from the DOM
-	}
 });
 
 //closes the form that allows a user to confirm whether they are deleting an item

@@ -277,6 +277,7 @@ h1 {
 	background-color: white;
 	border-radius: 20px;
 	padding: 24px 20px;
+	cursor: grab;
 }
 
 /* both containers inside list content */
@@ -443,6 +444,10 @@ h1 {
 	color: var(--medium-grey);
 }
 
+.list-item {
+	cursor: grab;
+}
+
 .list-item,
 .total-button-cont {
 	background-color: white;
@@ -604,7 +609,6 @@ h1 {
 .display-none {
 	display: none;
 }
-
 /* tablet size for list items */
 @media (max-width: 950px) {
 	/* styles for different lists */

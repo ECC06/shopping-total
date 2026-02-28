@@ -76,6 +76,15 @@ main {
 
 /* !MULTIPLE SELECTIONS */
 
+:is(.create-list-btn, .first-add-item-btn) {
+    transition: opacity 0.3s;
+    cursor: pointer;
+}
+
+:is(.create-list-btn, .first-add-item-btn):hover {
+    opacity: 0.65;
+}
+
 /* align items vertically and center them both ways */
 .no-lists-cont,
 .add-list-form,

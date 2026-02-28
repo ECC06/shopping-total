@@ -71,16 +71,10 @@ dialog::backdrop {
 }
 
 main {
-    margin-top: 100px;
+    padding: 100px 0;
 }
 
 /* !MULTIPLE SELECTIONS */
-
-html,
-body,
-main {
-    height: 100%;
-}
 
 /* align items vertically and center them both ways */
 .no-lists-cont,
@@ -313,6 +307,7 @@ h1 {
     border-radius: 20px;
     padding: 24px 20px;
     cursor: grab;
+    box-shadow: 20px 5px 30px -5px rgba(0, 0, 0, 0.1);
 }
 
 /* both containers inside list content */
@@ -471,7 +466,6 @@ h1 {
 }
 
 .items-and-add-btn-cont {
-    /* margin: 0 auto; */
     width: 100%;
 }
 
@@ -481,7 +475,8 @@ h1 {
     font-size: var(--font-size-24);
     border: 0;
     background-color: white;
-    border-radius: 6px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.1);
 }
 
 span.add-button-wrapper {

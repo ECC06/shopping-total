@@ -22,7 +22,6 @@ export const h1 = document.querySelector("h1");
 // add/update items dialog variables
 export const addItemsDialog = document.querySelector("#add-items-dialog");
 export const addOrUpdateItemsForm = document.querySelector("#add-items-form");
-const closeAddItemForm = document.querySelector("#close-add-item-form");
 const cancelAddItemBtn = document.querySelector("#cancel-add-item-btn");
 export const buttonsCont = document.querySelector(".item-form-buttons");
 export const addItemSubmitter = document.querySelector("#add-item-submitter");
@@ -163,12 +162,6 @@ itemsCont.addEventListener("click", (e) => {
     ) {
         displayUpdateForm(e);
     }
-});
-
-//handles the closing the form
-closeAddItemForm.addEventListener("click", (e) => {
-    removeUpdateButtonIfItExists();
-    addItemsDialog.close();
 });
 
 //closes the form for adding/updating items

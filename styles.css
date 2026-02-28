@@ -54,15 +54,21 @@
 
 dialog {
 	/* center all dialog boxes */
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-
-	position: absolute; /* positioned relative to the viewport itself */
-	width: 80%;
+	width: min(90%, 1000px); /*width, max-width*/
+	height: 600px;
+	overflow-y: scroll;
+	padding: 28px;
 	border-radius: 20px;
 	border: none;
 	z-index: 2;
+	position: absolute;
+	left: 50%;
+	translate: -50% 0;
+	top: 5%;
+}
+
+dialog::backdrop {
+	background-color: rgba(0, 0, 0, 0.5); /* adjust opacity as needed */
 }
 
 main {
@@ -346,39 +352,38 @@ h1 {
 }
 
 .update-name-dialog {
+	top: 40%;
 	max-width: 1000px;
 	height: 300px;
 }
 
 /* *------------LIST PAGE--------------------- */
 
-.add-items-dialog {
-	width: 90%;
-	max-width: 1000px;
-	height: 700px;
-	padding: 80px 20px 20px;
+.add-items-dialog article {
+	translate: 0 3%;
+}
+
+.db-click-info {
+	display: none;
 }
 
 .close-add-item-form {
-	top: 20px;
-	right: 20px;
-	position: absolute;
 	background-color: transparent;
 	border: 0;
 }
 
 /* a flex container */
 .add-items-form {
-	height: 100%;
 	width: 100%;
 	justify-content: space-between;
 }
 
-.add-items-form > div:not(.item-form-buttons) {
+.add-items-form > .form-field {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	margin-bottom: 32px;
 }
 
 .add-item-label {
@@ -394,7 +399,7 @@ h1 {
 .header-content,
 .items-main {
 	width: 90%;
-	max-width: 1500px;
+	max-width: 1200px;
 }
 
 .header-content {
@@ -677,9 +682,39 @@ h1 {
 
 /* !TABLET SIZE */
 @media (max-width: 768px) {
-	/* add items dialog */
 	dialog {
-		height: 95vh;
+		height: 800px;
+	}
+
+	.add-items-dialog article {
+		translate: 0 0;
+	}
+
+	.add-items-form,
+	.item-form-buttons {
+		margin-top: 48px;
+	}
+
+	.db-click-info {
+		padding: 4px 8px;
+		display: flex;
+		height: fit-content;
+		align-items: center;
+		gap: 10px;
+		color: var(--green);
+		font-size: 20px;
+		font-weight: 500;
+	}
+
+	.db-click-info::before {
+		content: url("./designAssets/icons/information-icon.svg");
+		width: 28px;
+		height: 28px;
+	}
+
+	.item-form-buttons {
+		flex-direction: column;
+		gap: 20px;
 	}
 
 	.new-list-img,

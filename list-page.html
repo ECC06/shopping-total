@@ -15,43 +15,39 @@
         Update
     </button>
     <dialog id="add-items-dialog" class="add-items-dialog">
-        <button id="close-add-item-form" class="close-add-item-form">
-            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="30" height="30" rx="15" fill="#E53636" fill-opacity="0.87" />
-                <path
-                    d="M16.9113 14.9591L21.6916 10.0499C21.9274 9.786 22.0548 9.43871 22.0473 9.08059C22.0397 8.72247 21.8978 8.38118 21.651 8.12798C21.4043 7.87477 21.0719 7.72921 20.7232 7.72167C20.3744 7.71414 20.0364 7.84522 19.7795 8.08755L19.7807 8.08628L15.0004 12.9954L10.2201 8.08628C9.96303 7.84412 9.62486 7.71327 9.27614 7.72103C8.92741 7.72879 8.59508 7.87458 8.34852 8.12795C8.10196 8.38132 7.96022 8.7227 7.95288 9.08083C7.94555 9.43895 8.07319 9.78615 8.30916 10.0499L8.30792 10.0487L13.0883 14.9578L8.30792 19.867C8.17342 19.9937 8.06528 20.1471 7.99001 20.3179C7.91475 20.4886 7.8739 20.6733 7.86995 20.8607C7.86599 21.0481 7.899 21.2343 7.96699 21.4083C8.03498 21.5823 8.13654 21.7403 8.26557 21.8729C8.39459 22.0055 8.54841 22.1099 8.71775 22.1798C8.8871 22.2497 9.06847 22.2838 9.25096 22.2798C9.43344 22.2759 9.61326 22.234 9.7796 22.1569C9.94593 22.0797 10.0953 21.9687 10.2188 21.8307L10.2201 21.8294L15.0004 16.9202L19.7807 21.8294C19.9041 21.9675 20.0534 22.0786 20.2197 22.1559C20.386 22.2332 20.5658 22.2751 20.7483 22.2792C20.9308 22.2832 21.1122 22.2493 21.2816 22.1795C21.451 22.1097 21.6048 22.0054 21.7339 21.8729C21.863 21.7404 21.9647 21.5824 22.0328 21.4085C22.1009 21.2346 22.134 21.0484 22.1302 20.861C22.1264 20.6735 22.0856 20.4889 22.0105 20.3181C21.9353 20.1473 21.8273 19.9938 21.6929 19.867L21.6916 19.8657L16.9113 14.9591Z"
-                    fill="white" />
-            </svg>
-        </button>
+        <article class="dialog-content">
+            <span class="db-click-info">Double click a list item to edit it</span>
 
-        <form id="add-items-form" class="add-items-form">
-            <div>
-                <label for="item-name-input" class="add-item-label">Item name</label>
-                <input class="item-data-input" type="text" name="item-name-input" id="item-name-input" maxlength="25"
-                    required />
-            </div>
+            <form id="add-items-form" class="add-items-form">
+                <div class="form-field">
+                    <label for="item-name-input" class="form-field add-item-label">Item name</label>
+                    <input class="item-data-input" type="text" name="item-name-input" id="item-name-input"
+                        maxlength="25" required />
+                </div>
 
-            <div>
-                <label for="item-desc-input" class="add-item-label">Description</label>
-                <input class="item-data-input" type="text" name="item-desc-input" id="item-desc-input" maxlength="30"
-                    required />
-            </div>
+                <div class="form-field">
+                    <label for="item-desc-input" class="form-field add-item-label">Description</label>
+                    <input class="item-data-input" type="text" name="item-desc-input" id="item-desc-input"
+                        maxlength="30" required />
+                </div>
 
-            <div>
-                <label for="item-price-input" class="add-item-label">Price (ghc)</label>
-                <input class="item-data-input" type="number" name="item-price-input" id="item-price-input" required />
-            </div>
+                <div class="form-field">
+                    <label for="item-price-input" class="add-item-label">Price (ghc)</label>
+                    <input class="item-data-input" type="number" name="item-price-input" id="item-price-input"
+                        required />
+                </div>
 
-            <div class="item-form-buttons">
-                <!-- either add item button or update item button is shown in when the user opens the form  -->
-                <button type="submit" id="add-item-submitter" class="add-item-submitter">
-                    Add item
-                </button>
-                <button type="button" id="cancel-add-item-btn" class="cancel-add-item-btn">
-                    Cancel
-                </button>
-            </div>
-        </form>
+                <div class="item-form-buttons">
+                    <!-- either add item button or update item button is shown in when the user opens the form  -->
+                    <button type="submit" id="add-item-submitter" class="add-item-submitter">
+                        Add item
+                    </button>
+                    <button type="button" id="cancel-add-item-btn" class="cancel-add-item-btn">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </article>
     </dialog>
 
     <dialog id="delete-item-dialog" class="delete-item-dialog">

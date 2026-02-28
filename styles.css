@@ -600,6 +600,11 @@ span.add-button-wrapper:hover svg {
     display: flex;
     align-items: center;
     gap: 20px;
+    height: fit-content;
+}
+
+.quantity-controls button:hover {
+    cursor: pointer;
 }
 
 .minus-btn,
@@ -629,6 +634,7 @@ span.add-button-wrapper:hover svg {
     align-items: center;
     border: none;
     background-color: transparent;
+    cursor: pointer;
 }
 
 .delete-item-btn > svg {

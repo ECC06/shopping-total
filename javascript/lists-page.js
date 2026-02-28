@@ -53,11 +53,13 @@ new Sortable(listsCont, {
     animation: 300,
 
     onStart: function (evt) {
+        document.body.style.userSelect = 'none';
         evt.item.style.opacity = "0.5";
+        evt.item.style.cursor = "grabbing";
     },
     onEnd: function (evt) {
         evt.item.style.opacity = "1";
-
+        evt.item.style.cursor = "grab";
         storeReArrangedLists();
     },
 });

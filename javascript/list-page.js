@@ -87,10 +87,14 @@ new Sortable(itemsCont, {
     animation: 300,
 
     onStart: function (evt) {
+        document.body.style.userSelect = 'none';
         evt.item.style.opacity = "0.5";
+        evt.item.style.cursor = "grabbing";
     },
     onEnd: function (evt) {
+        document.body.style.userSelect = 'none';
         evt.item.style.opacity = "1";
+        evt.item.style.cursor = "grab";
         storeReArrangedListItems();
 
         function storeReArrangedListItems() {
@@ -174,13 +178,21 @@ cancelAddItemBtn.addEventListener("click", (e) => {
 addOrUpdateItemsForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
+    const nameInput = nameInputElem.value.trim();
+    const descriptionInput = addOrUpdateItemsForm.querySelector("#item-desc-input").value.trim();
+
     //runs based on a button
     if (e.submitter.id === "add-item-submitter") {
-        if (!userDuplicatedItemName(nameInputElem.value)) {
+        if (!userDuplicatedItemName(nameInput, descriptionInput)) {
             createNewItem();
         }
-    } else if (e.submitter.id === "update-item-submitter") {
-        updateItems();
+    }
+
+    if (e.submitter.id === "update-item-submitter") {
+        // debugger;
+        if (!userDuplicatedItemName(nameInput, descriptionInput)) {
+            updateItems();
+        }
     }
 });
 

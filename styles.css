@@ -757,6 +757,7 @@ span.add-button-wrapper:hover svg {
     .db-click-info {
         padding: 4px 8px;
         display: flex;
+        justify-content: center;
         height: fit-content;
         align-items: center;
         gap: 10px;

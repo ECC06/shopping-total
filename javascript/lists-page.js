@@ -58,6 +58,7 @@ new Sortable(listsCont, {
         evt.item.style.cursor = "grabbing";
     },
     onEnd: function (evt) {
+        document.body.style.userSelect = 'auto';
         evt.item.style.opacity = "1";
         evt.item.style.cursor = "grab";
         storeReArrangedLists();

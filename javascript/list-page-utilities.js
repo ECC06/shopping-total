@@ -21,10 +21,13 @@ import {
 
 import { addNewItemToLocalStorage } from "./shared.js";
 
-export function userDuplicatedItemName(userInput) {
+export function userDuplicatedItemName(nameInput, descriptionInput) {
     if (localStorage.getItem(nameOfListItemsInLocalStorage)) {
         for (const obj of itemsArrFromLocalStorage()) {
-            if (userInput.toLowerCase() === obj["itemName"].toLowerCase()) {
+            const namesIdentical = nameInput.toLowerCase() === obj["itemName"].toLowerCase(); //ice cream 
+            const descriptionsIdentical = descriptionInput.toLowerCase() === obj["description"].toLowerCase(); //vanilla
+
+            if (namesIdentical && descriptionsIdentical) {
                 alert(
                     `You already have an item with this name! Instead, you can increase its quantity to your liking.`,
                 );
@@ -308,6 +311,7 @@ export function addItemToHTML(listObj) {
     const lastItemOfList = () => itemsCont.lastElementChild; //gets the current last element of the list (it's changes as more and more are added)
 
     const clonedList = listItem.cloneNode(true); //clone the last item in the list
+
     itemsCont.appendChild(clonedList); //add it to the list
 
     populateItem(listObj, lastItemOfList()); //populate the item with the correct data
@@ -320,6 +324,11 @@ export function addItemToHTML(listObj) {
 //takes in: the object containing the data, and which item to populate with the data
 export function populateItem(listItemObj, itemToPopulate) {
     itemToPopulate.id = listItemObj.id; //populate the last list item with the id of the single list object in local storage
+
+    const itemsArrLength = itemsArrFromLocalStorage().length;
+    const itemCheckbox = itemToPopulate.querySelector("input[type='checkbox']");
+
+    itemCheckbox.id = `input${itemsArrLength}`;
 
     //populate existing list item
     const itemName = itemToPopulate.querySelector(".item-name");

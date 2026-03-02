@@ -55,7 +55,7 @@
 dialog {
     /* center all dialog boxes */
     width: min(90%, 1000px); /*width, max-width*/
-    height: 600px;
+    min-height: 600px;
     padding: 28px;
     border-radius: 20px;
     border: none;
@@ -486,19 +486,25 @@ h1 {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.1);
-}
-
-span.add-button-wrapper {
-    color: var(--medium-grey);
-    font-weight: var(--light);
-}
-
-span.add-button-wrapper svg {
-    transition: scale 0.3s;
     cursor: pointer;
 }
 
-span.add-button-wrapper:hover svg {
+.main-add-item-btn span {
+    color: var(--medium-grey);
+    font-weight: var(--light);
+    transition: all 0.3s;
+}
+
+.main-add-item-btn:hover span {
+    color: var(--green);
+}
+
+.main-add-item-btn,
+.main-add-item-btn svg {
+    transition: all 0.3s;
+}
+
+.main-add-item-btn:hover svg {
     scale: 1.2;
 }
 
@@ -746,7 +752,7 @@ span.add-button-wrapper:hover svg {
 /* !TABLET SIZE */
 @media (max-width: 768px) {
     dialog {
-        height: 800px;
+        min-height: 800px;
     }
 
     .add-items-dialog article {
@@ -761,7 +767,7 @@ span.add-button-wrapper:hover svg {
     .db-click-info {
         padding: 4px 8px;
         display: flex;
-        justify-content: center;
+        justify-content: start;
         height: fit-content;
         align-items: center;
         gap: 10px;
@@ -832,6 +838,10 @@ span.add-button-wrapper:hover svg {
 
     .list-h1 {
         font-size: var(--font-size-28);
+    }
+
+    .db-click-info {
+        font-size: 16px;
     }
 
     .name-list-label {

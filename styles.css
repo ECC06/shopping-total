@@ -558,19 +558,23 @@ span.add-button-wrapper:hover svg {
 }
 
 .check {
-    width: 41px;
-    height: 33px;
+    width: 34px;
+    height: 30px;
     -webkit-appearance: none; /* For WebKit browsers like Chrome, Safari */
     -moz-appearance: none; /* For Mozilla browsers like Firefox */
     appearance: none; /*Standard property */
     border: 2px solid var(--green);
-    border-radius: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.check:checked {
+    background-color: var(--green);
 }
 
 .check:checked::before {
-    content: "✓";
+    content: url("./designAssets/icons/check-icon.svg");
     display: block;
-    color: var(--green);
     font-size: 16px;
     margin-top: 4px;
     text-align: center;

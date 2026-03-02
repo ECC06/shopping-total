@@ -10,7 +10,7 @@ import {
     toggle,
     updateItems,
     updateTotal,
-    userDuplicatedItemName,
+    userDuplicatedItem,
 } from "./list-page-utilities.js";
 
 const listId = localStorage.getItem("list-id");
@@ -68,7 +68,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     if (localStorage.getItem(nameOfListItemsInLocalStorage)) {
         itemsArrFromLocalStorage().forEach((obj) => {
-            //each iteration appends a clone of listCont, instead of listCont itself, so that it doesn't get moved every time appendChild is called
             addItemToHTML(obj);
         });
 
@@ -183,14 +182,14 @@ addOrUpdateItemsForm.addEventListener("submit", (e) => {
 
     //runs based on a button
     if (e.submitter.id === "add-item-submitter") {
-        if (!userDuplicatedItemName(nameInput, descriptionInput)) {
+        if (!userDuplicatedItem(nameInput, descriptionInput)) {
             createNewItem();
         }
     }
 
     if (e.submitter.id === "update-item-submitter") {
         // debugger;
-        if (!userDuplicatedItemName(nameInput, descriptionInput)) {
+        if (!userDuplicatedItem(nameInput, descriptionInput)) {
             updateItems();
         }
     }

@@ -21,7 +21,8 @@ import {
 
 import { addNewItemToLocalStorage } from "./shared.js";
 
-export function userDuplicatedItemName(nameInput, descriptionInput) {
+// returns true if the user tries to add an item with the same name and description. else, returns false
+export function userDuplicatedItem(nameInput, descriptionInput) {
     if (localStorage.getItem(nameOfListItemsInLocalStorage)) {
         for (const obj of itemsArrFromLocalStorage()) {
             const namesIdentical = nameInput.toLowerCase() === obj["itemName"].toLowerCase(); //ice cream 
@@ -29,7 +30,7 @@ export function userDuplicatedItemName(nameInput, descriptionInput) {
 
             if (namesIdentical && descriptionsIdentical) {
                 alert(
-                    `You already have an item with this name! Instead, you can increase its quantity to your liking.`,
+                    `You already have this item!  Instead, you can increase its quantity to your liking.`,
                 );
                 return true;
             }
@@ -325,10 +326,11 @@ export function addItemToHTML(listObj) {
 export function populateItem(listItemObj, itemToPopulate) {
     itemToPopulate.id = listItemObj.id; //populate the last list item with the id of the single list object in local storage
 
-    const itemsArrLength = itemsArrFromLocalStorage().length;
+    const itemObjIndex = itemsArrFromLocalStorage().findIndex((obj) => obj.id === listItemObj.id);
+
     const itemCheckbox = itemToPopulate.querySelector("input[type='checkbox']");
 
-    itemCheckbox.id = `input${itemsArrLength}`;
+    itemCheckbox.id = `input${itemObjIndex + 1}`;
 
     //populate existing list item
     const itemName = itemToPopulate.querySelector(".item-name");

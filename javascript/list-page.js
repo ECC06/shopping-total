@@ -180,7 +180,6 @@ addOrUpdateItemsForm.addEventListener("submit", (e) => {
     const nameInput = nameInputElem.value.trim();
     const descriptionInput = addOrUpdateItemsForm.querySelector("#item-desc-input").value.trim();
 
-    //runs based on a button
     if (e.submitter.id === "add-item-submitter") {
         if (!userDuplicatedItem(nameInput, descriptionInput)) {
             createNewItem();
@@ -188,10 +187,7 @@ addOrUpdateItemsForm.addEventListener("submit", (e) => {
     }
 
     if (e.submitter.id === "update-item-submitter") {
-        // debugger;
-        if (!userDuplicatedItem(nameInput, descriptionInput)) {
-            updateItems();
-        }
+        updateItems();
     }
 });
 

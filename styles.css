@@ -581,8 +581,8 @@ h1 {
 .check:checked::before {
     content: url("./designAssets/icons/check-icon.svg");
     display: block;
-    font-size: 16px;
-    margin-top: 4px;
+    font-size: 8px;
+    margin-top: 6px;
     text-align: center;
 }
 
@@ -728,6 +728,7 @@ h1 {
     .check {
         width: 30px;
         height: 26.4px;
+        margin-top: -4px;
     }
 
     .list-item-wrapper {
@@ -737,7 +738,7 @@ h1 {
     }
 
     .list-item {
-        padding: 12px;
+        padding: 20px 12px;
     }
 
     .item-name {

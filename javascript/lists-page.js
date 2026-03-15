@@ -51,6 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // !!RE-ORDER LIST ITEMS
 new Sortable(listsCont, {
     animation: 300,
+    delay: 1500,
+    delayOnTouchOnly: true,
 
     onStart: function (evt) {
         document.body.style.userSelect = 'none';

@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 // !!RE-ORDER LIST ITEMS
 new Sortable(itemsCont, {
     animation: 300,
-    delay: 1500,
+    delay: 800,
     delayOnTouchOnly: true,
 
     onStart: function (evt) {

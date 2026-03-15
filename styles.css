@@ -713,6 +713,7 @@ h1 {
     .check-and-description,
     .price-and-quantity {
         width: 100%;
+        gap: 20px;
     }
 
     .edit-item-btn {
@@ -724,17 +725,37 @@ h1 {
         border: 0;
     }
 
+    .check {
+        width: 30px;
+        height: 26.4px;
+    }
+
     .list-item-wrapper {
         position: relative;
         gap: 0;
+        width: 99%;
+    }
+
+    .list-item {
+        padding: 12px;
+    }
+
+    .item-name {
+        font-size: var(--font-size-24);
+    }
+
+    .description {
+        font-size: 1.125rem; /*18px*/
+        margin-top: 8px;
     }
 
     .price-and-quantity {
-        margin-top: 16px;
+        margin-top: 8px;
     }
 
     .price-cont {
-        padding-left: 60px;
+        font-size: var(--font-size-20);
+        padding-left: 48px;
     }
 
     .total-text,
@@ -746,6 +767,7 @@ h1 {
         top: 0;
         right: 0;
         position: absolute;
+        width: 25px;
     }
 }
 
@@ -910,12 +932,22 @@ h1 {
         font-size: var(--font-size-40);
     }
 
-    .price-cont {
-        font-size: var(--font-size-24);
-    }
-
     .main-add-item-btn {
         font-size: var(--font-size-20);
+    }
+
+    .price-and-quantity {
+        margin-top: 16px;
+    }
+
+    .minus-btn,
+    .plus-btn {
+        height: 20px;
+        width: 20px;
+    }
+
+    .quantity {
+        font-size: 20px;
     }
 
     .total-button-cont {

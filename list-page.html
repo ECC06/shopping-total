@@ -14,7 +14,7 @@
     <button type="submit" id="update-item-submitter" class="update-item-submitter display-none">
         Update
     </button>
-    <dialog id="add-items-dialog" class="add-items-dialog">
+    <dialog id="add-items-dialog" class="add-items-dialog" open>
         <article class="dialog-content">
             <span class="db-click-info">Double click a list item to edit it</span>
 
@@ -32,16 +32,16 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="item-price-input" class="add-item-label">Price (<span
-                            class="currency-sign">ghc</span>)</label>
+                    <label for="item-price-input" class="add-item-label">
+                        Price (<span class="currency-sign">ghc</span>)
+                    </label>
                     <div class="input-and-dropdown">
                         <input class="item-data-input" type="number" step="any" name="item-price-input"
                             id="item-price-input" required />
-                        <div>
+                        <div class="button-and-dropdown">
                             <button class="dropdown-btn" type="button">
-                                <span>₵</span>
+                                <span class="button-sign">₵</span>
                                 <span>Change</span>
-                                <span>⬇️</span>
                             </button>
 
                             <ul class="currency-dropdown opened">

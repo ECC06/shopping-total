@@ -433,7 +433,43 @@ h1 {
     font-size: var(--font-size-28);
 }
 
+.input-and-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 60%;
+    /* border: 2px solid black; */
+}
+
+#item-price-input {
+    width: 100%;
+}
+
+.button-and-dropdown {
+    width: 160px;
+    height: 60px;
+}
+
+.dropdown-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    padding: 4px 8px;
+    font-size: var(--font-size-20);
+    outline: 4px solid var(--green);
+    border: none;
+    border-radius: 8px;
+}
+
+.sign-and-text::after {
+    content: url("./designAssets/icons/dropdown-icon.svg");
+    display: inline-block;
+}
+
 .currency-dropdown {
+    position: absolute;
     display: none;
 }
 

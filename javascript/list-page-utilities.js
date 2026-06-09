@@ -4,7 +4,7 @@ import {
     addItemFormElements,
     addItemSubmitter,
     addItemsDialog,
-    addOrUpdateItemsForm,
+    itemInfoForm,
     buttonsCont,
     descInputElem,
     getCurrentTotalElem,
@@ -17,7 +17,8 @@ import {
     listTotalInLocalStorage,
     priceInputElem,
     updateSubmitter,
-    selectedCurrency
+    selectedCurrency,
+    formSubmitter
 } from "./list-page.js";
 
 import { addNewItemToLocalStorage } from "./shared.js";
@@ -175,13 +176,13 @@ export function checkPreviouslyCheckedItems() {
 }
 
 export function createNewItem() {
-    itemObject["itemName"] = nameInputElem.value;
+    itemObject["itemName"] = nameInputElem.value; //"Milk"
 
     const totalElem = getCurrentTotalElem();
 
     //every time the user adds a new item, add it's original price to the current total of the list
-    let currentTotal = Number(totalElem.innerText);
-    currentTotal += Number(priceInputElem.value);
+    let currentTotal = Number(totalElem.innerText); //30
+    currentTotal += Number(priceInputElem.value); //30+20
 
     //updates the list total in the local storage
     localStorage.setItem(listTotalInLocalStorage, currentTotal);
@@ -201,86 +202,84 @@ export function createNewItem() {
 }
 
 export function displayUpdateForm(event) {
-    const listItemClicked = event.target.closest(".list-item"); // the closest list item to the element that was clicked
+    const listItemToUpdate = event.target.closest(".list-item"); // the closest list item to the element that was clicked
 
-    itemToUpdate.item = listItemClicked; // the global variable: "itemToUpdate.item" is updated so it can be used in the updateItem() function and the submit event listener for updating the form.
+    itemToUpdate.item = listItemToUpdate; // the global variable: "itemToUpdate.item" is updated so it can be used in the updateItem() function and the submit event listener for updating the form.
 
     // if the element that received the event is able to traverse upwards and find a list item,
-    if (listItemClicked) {
-        displayOnlyUpdateButton();
+    if (listItemToUpdate) {
+        displayUpdateButton();
         populateInputs();
 
-        function displayOnlyUpdateButton() {
-            // only add a new update button but ONLY if it's not already inside the buttons container
-            if (!addOrUpdateItemsForm.querySelector("#update-item-submitter")) {
-                const clonedUpdateBtn = updateSubmitter.cloneNode(true);
-                buttonsCont.prepend(clonedUpdateBtn);
+        addItemsDialog.showModal();
+    }
 
-                clonedUpdateBtn.classList.toggle("display-none"); //show the update button
-                addItemSubmitter.style.display = "none"; //hide the add item button
-            }
-            addItemsDialog.showModal();
-        }
-        //populate the update form with the current data in the list element
-        function populateInputs() {
-            const listItemId = Number(listItemClicked.id);
+    //populate the update form with the current data in the list element
+    function populateInputs() {
+        const listItemId = Number(listItemToUpdate.id);
 
-            const listItemInfoInLocalStorage = itemsArrFromLocalStorage().find(
-                (obj) => obj.id === listItemId,
-            );
+        const listItemInfoInLocalStorage = itemsArrFromLocalStorage().find(
+            (obj) => obj.id === listItemId,
+        );
 
-            const nameLabel = listItemClicked.querySelector(".item-name");
-            const descriptionElem =
-                listItemClicked.querySelector(".description");
+        const nameLabel = listItemToUpdate.querySelector(".item-name");
+        const descriptionElem =
+            listItemToUpdate.querySelector(".description");
 
-            nameInputElem.value = nameLabel.innerText;
-            descInputElem.value = descriptionElem.innerText;
-            priceInputElem.value = listItemInfoInLocalStorage.price;
-        }
+        nameInputElem.value = nameLabel.innerText;
+        descInputElem.value = descriptionElem.innerText;
+        priceInputElem.value = listItemInfoInLocalStorage.price;
     }
 }
 
+export function displayUpdateButton() {
+    formSubmitter.id = "update-item-submitter";
+    formSubmitter.className = "submitter update-item-submitter";
+    formSubmitter.innerText = "Update";
+}
+
+export function putBackAddBtn() {
+    formSubmitter.id = "add-item-submitter";
+    formSubmitter.className = "submitter add-item-submitter";
+    formSubmitter.innerText = "Add item";
+}
+
 export function updateItems() {
-    const storedList = itemsArrFromLocalStorage();
+    const arrFromLocalStorage = itemsArrFromLocalStorage();
 
-    let listDataObj = null;
-    let totalIncrease = null;
-    let totalDecrease = null;
+    let increase = null;
+    let decrease = null; //5
 
-    //update items in local storage
+    //object to update in local storage
+    const objToUpdate = arrFromLocalStorage.find((obj) => Number(itemToUpdate.item.id) === obj.id);
 
-    for (const obj of storedList) {
-        if (Number(itemToUpdate.item.id) === obj.id) {
-            const formerTotal = obj.total; // 60
-            const newPriceInput = Number(priceInputElem.value);
-            const newTotal = newPriceInput * obj.quantity;
+    //calculate the new total of the list and determine whether there was increase or decrease based on the user's input
+    const formerItemTotal = objToUpdate.total; // 60
+    const newPriceInput = Number(priceInputElem.value); //55
+    const newItemTotal = newPriceInput * objToUpdate.quantity; //55*1
 
-            if (formerTotal < newTotal) {
-                totalIncrease = newTotal - formerTotal;
-            } else if (formerTotal > newTotal) {
-                totalDecrease = formerTotal - newTotal;
-            }
-
-            listDataObj = obj;
-
-            //update the object with the user's input
-            obj.itemName = nameInputElem.value;
-            obj.description = descInputElem.value;
-            obj.price = newPriceInput;
-            obj.total = newTotal;
-            break;
-        }
+    if (formerItemTotal < newItemTotal) {
+        increase = newItemTotal - formerItemTotal; //5 cedis
+    } else if (formerItemTotal > newItemTotal) {
+        decrease = formerItemTotal - newItemTotal;
     }
+
+    //update the object with the user's input
+    objToUpdate.itemName = nameInputElem.value;
+    objToUpdate.description = descInputElem.value;
+    objToUpdate.price = newPriceInput;
+    objToUpdate.total = newItemTotal; //55
+
 
     //store the updated arr
     localStorage.setItem(
         listItemsInLocalStorage,
-        JSON.stringify(storedList),
+        JSON.stringify(arrFromLocalStorage),
     );
 
-    populateItem(listDataObj, itemToUpdate.item); //update items in HTML
+    populateItem(objToUpdate, itemToUpdate.item); //update list items in HTML
 
-    updateListTotal(totalIncrease, totalDecrease); //update list total in local storage and html
+    updateListTotal(increase, decrease); //update list total in local storage and html
 
     itemToUpdate.item = null; //clears this variable so that another item the user wants to update can take it's place
 
@@ -289,34 +288,23 @@ export function updateItems() {
 
 //updates the list total in HTML and in local storage
 function updateListTotal(increase, decrease) {
-    //update total in HTML
-    const currentListTotal = Number(getCurrentTotalElem().innerText);
+    let finalValue = null;
+    const totalElem = getCurrentTotalElem();
+    const listTotal = Number(totalElem.innerText);
 
     //could be less verbose but...
     if (increase) {
-        getCurrentTotalElem().innerText = currentListTotal + increase; //40 + 20 = 60
-        localStorage.setItem(
-            listTotalInLocalStorage,
-            JSON.stringify(currentListTotal + increase),
-        );
+        finalValue = listTotal + increase;
     } else if (decrease) {
-        getCurrentTotalElem().innerText = currentListTotal - decrease; //60 - 20 = 40
-        localStorage.setItem(
-            listTotalInLocalStorage,
-            JSON.stringify(currentListTotal - decrease),
-        );
+        finalValue = listTotal - decrease;
     }
-}
 
-export function removeUpdateButtonIfItExists() {
-    const updateSubmitterInButtonsCont = buttonsCont.querySelector(
-        "#update-item-submitter",
+    totalElem.innerText = finalValue;
+
+    localStorage.setItem(
+        listTotalInLocalStorage,
+        JSON.stringify(finalValue),
     );
-    //removes the update button from the button container (so that at all times the button container has only ONE submitter)
-    if (updateSubmitterInButtonsCont) {
-        buttonsCont.removeChild(updateSubmitterInButtonsCont);
-        addItemSubmitter.style.display = "flex"; //show the add button because at this point the display is set to "none"
-    }
 }
 
 //!ud
@@ -339,28 +327,23 @@ function storeFormInput() {
 //adds a new item to the list container and populates it with the newly added list data (e.g the list name the user just typed in)
 export function addItemToHTML(listObj) {
     const listItem = document.querySelector(".list-item");
-    const lastItemOfList = () => itemsCont.lastElementChild; //gets the current last element of the list (it's changes as more and more are added)
+    // const lastItemOfList = () => itemsCont.lastElementChild; //gets the current last element of the list (it's changes as more and more are added)
 
-    const clonedList = listItem.cloneNode(true); //clone the last item in the list
+    const clonedListElement = listItem.cloneNode(true); //clone the last item in the list
 
-    itemsCont.appendChild(clonedList); //add it to the list
+    const populatedListElement = populateItem(listObj, clonedListElement); //populate the item with the correct data
 
-    populateItem(listObj, lastItemOfList()); //populate the item with the correct data
+    itemsCont.appendChild(populatedListElement); //add it to the list
 
-    clonedList.classList.toggle("display-none"); //display list item
+    clonedListElement.classList.toggle("display-none"); //display list item
 }
 
-//!ud
 //populates list items with the data the user provides in the form
 //takes in: the object containing the data, and which item to populate with the data
 export function populateItem(listItemObj, itemToPopulate) {
-    itemToPopulate.id = listItemObj.id; //populate the last list item with the id of the single list object in local storage
-
-    const itemObjIndex = itemsArrFromLocalStorage().findIndex((obj) => obj.id === listItemObj.id);
+    const itemObjIndex = itemsArrFromLocalStorage().findIndex((obj) => obj.id === listItemObj.id); // 90
 
     const itemCheckbox = itemToPopulate.querySelector("input[type='checkbox']");
-
-    itemCheckbox.id = `input${itemObjIndex + 1}`;
 
     //populate existing list item
     const itemName = itemToPopulate.querySelector(".item-name");
@@ -368,10 +351,17 @@ export function populateItem(listItemObj, itemToPopulate) {
     const priceElem = itemToPopulate.querySelector(".price");
     const quantityElem = itemToPopulate.querySelector(".quantity");
 
+    itemCheckbox.id = `input${itemObjIndex + 1}`; //input2
+
+    itemToPopulate.id = listItemObj.id; //populate the last list item with the id of the single list object in local storage
+
     itemName.innerText = listItemObj.itemName;
     descriptionElem.innerText = listItemObj.description;
+
     priceElem.innerText = listItemObj.total;
     quantityElem.innerText = listItemObj.quantity;
+
+    return itemToPopulate;
 }
 
 //display the container of list items if there are list items in local storage

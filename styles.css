@@ -213,7 +213,7 @@ main {
 .cancel-change-btn,
 .confirm-delete-list-btn,
 .confirm-delete-item-btn,
-.cancel-add-item-btn {
+.items-form-cancel-btn {
     background-color: var(--red);
 }
 

@@ -6,12 +6,12 @@ import {
     createNewItem,
     displayUpdateForm,
     manipulateQuantity,
-    removeUpdateButtonIfItExists,
     toggle,
     updateItems,
     updateTotal,
     userDuplicatedItem,
-    updateCurrencyOnPage
+    updateCurrencyOnPage,
+    putBackAddBtn
 } from "./list-page-utilities.js";
 
 const listId = localStorage.getItem("list-id");
@@ -27,16 +27,17 @@ export const h1 = document.querySelector("h1");
 
 // add/update items dialog variables
 export const addItemsDialog = document.querySelector("#add-items-dialog");
-export const addOrUpdateItemsForm = document.querySelector("#add-items-form");
-const cancelAddItemBtn = document.querySelector("#cancel-add-item-btn");
+export const itemInfoForm = document.querySelector("#add-items-form");
+const cancelBtn = document.querySelector("#items-form-cancel-btn");
 export const buttonsCont = document.querySelector(".item-form-buttons");
+export const formSubmitter = document.querySelector(".submitter");
 export const addItemSubmitter = document.querySelector("#add-item-submitter");
 export const updateSubmitter = document.querySelector("#update-item-submitter");
 
 const firstAddItemBtn = document.querySelector("#first-add-item-btn");
 const mainAddItemBtn = document.querySelector("#main-add-item-btn");
 export const itemsCont = document.querySelector("#items-cont");
-export const addItemFormElements = Array.from(addOrUpdateItemsForm.elements);
+export const addItemFormElements = Array.from(itemInfoForm.elements);
 export const [nameInputElem, descInputElem, priceInputElem] =
     addItemFormElements;
 
@@ -223,17 +224,20 @@ document.addEventListener("click", function (e) {
 });
 
 //closes the form for adding/updating items
-cancelAddItemBtn.addEventListener("click", (e) => {
-    removeUpdateButtonIfItExists();
+cancelBtn.addEventListener("click", (e) => {
+    if (cancelBtn.id !== "add-item-submitter") {
+        putBackAddBtn();
+    }
+
     addItemsDialog.close();
 });
 
 //handles the submission of list data, e.g the name, description, price, etc
-addOrUpdateItemsForm.addEventListener("submit", (e) => {
+itemInfoForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const nameInput = nameInputElem.value.trim();
-    const descriptionInput = addOrUpdateItemsForm.querySelector("#item-desc-input").value.trim();
+    const descriptionInput = itemInfoForm.querySelector("#item-desc-input").value.trim();
 
     if (e.submitter.id === "add-item-submitter") {
         if (!userDuplicatedItem(nameInput, descriptionInput)) {
@@ -243,6 +247,7 @@ addOrUpdateItemsForm.addEventListener("submit", (e) => {
 
     if (e.submitter.id === "update-item-submitter") {
         updateItems();
+        putBackAddBtn();
     }
 });
 
@@ -342,6 +347,7 @@ deleteItemForm.addEventListener("submit", (e) => {
     //if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new list in local storage, with the selected object deleted
     if (itemsToKeepInStorage.length === 0) {
         localStorage.removeItem(listItemsInLocalStorage);
+        localStorage.removeItem(listTotalInLocalStorage);
         itemsCont.innerHTML = ""; //remove the list elements from the HTML as well
         getCurrentTotalElem().innerText = 0;
         toggle(); //display the "no lists container"
@@ -351,9 +357,9 @@ deleteItemForm.addEventListener("submit", (e) => {
             JSON.stringify(itemsToKeepInStorage),
         );
         liElemToDelete.remove(); //removes the selected list from the DOM
-    }
 
-    updateTotal(objToDelete);
+        updateTotal(objToDelete);
+    }
 
     liElemToDelete = null; //reset selected item to null so that another item can be stored inside in the future
 

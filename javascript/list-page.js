@@ -11,11 +11,17 @@ import {
     updateItems,
     updateTotal,
     userDuplicatedItem,
+    updateCurrencyOnPage
 } from "./list-page-utilities.js";
 
 const listId = localStorage.getItem("list-id");
-export const nameOfListItemsInLocalStorage = `list-items-for-${listId}`;
-export const nameOfListTotalInLocalStorage = `list-total-for-${listId}`;
+export const listItemsInLocalStorage = `list-items-for-${listId}`;
+export const listTotalInLocalStorage = `list-total-for-${listId}`;
+
+const dropdownBtn = document.querySelector(".dropdown-btn");
+const currencyDropdown = document.querySelector(".currency-dropdown");
+const dropdownWrapper = document.querySelector(".dropdown-wrapper");
+export const selectedCurrency = { val: localStorage.getItem("selected-currency") ?? "ghc" };
 
 export const h1 = document.querySelector("h1");
 
@@ -46,10 +52,10 @@ export const itemObject = {};
 export const getCurrentTotalElem = () => document.querySelector("#total");
 
 export const itemToUpdate = { item: null };
-let itemToDelete = null;
+let liElemToDelete = null;
 
 export const itemsArrFromLocalStorage = () =>
-    JSON.parse(localStorage.getItem(nameOfListItemsInLocalStorage));
+    JSON.parse(localStorage.getItem(listItemsInLocalStorage));
 
 backBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -66,18 +72,20 @@ backBtn.addEventListener("click", (e) => {
 document.addEventListener("DOMContentLoaded", (e) => {
     h1.innerText = localStorage.getItem("list-name");
 
-    if (localStorage.getItem(nameOfListItemsInLocalStorage)) {
+    if (itemsArrFromLocalStorage()) {
         itemsArrFromLocalStorage().forEach((obj) => {
             addItemToHTML(obj);
         });
 
         getCurrentTotalElem().innerText = localStorage.getItem(
-            nameOfListTotalInLocalStorage,
+            listTotalInLocalStorage,
         ); //update the list total
 
         checkPreviouslyCheckedItems();
 
         toggle();
+
+        updateCurrencyOnPage();
     }
 });
 
@@ -119,7 +127,7 @@ new Sortable(itemsCont, {
                 reArrangedItems.push(obj);
             });
 
-            localStorage.setItem(nameOfListItemsInLocalStorage, JSON.stringify(reArrangedItems));
+            localStorage.setItem(listItemsInLocalStorage, JSON.stringify(reArrangedItems));
         }
     },
 });
@@ -138,7 +146,7 @@ mainAddItemBtn.addEventListener("click", (e) => {
     addItemsDialog.showModal();
 });
 
-//displays the form for user to edit, with the inputs populated with the list information
+//allows the form to be opened on double click
 itemsCont.addEventListener("dblclick", (e) => {
     const doNotRespondToDbClick = [
         "check",
@@ -166,6 +174,51 @@ itemsCont.addEventListener("click", (e) => {
         e.target.classList.contains("edit-item-svg")
     ) {
         displayUpdateForm(e);
+    }
+});
+
+//closes and opens the currency selector dropdown
+dropdownBtn.addEventListener("click", function () {
+    currencyDropdown.classList.toggle("opened");
+});
+
+//closes the currency selector dropdown when user clicks outside of it
+document.addEventListener("click", function (e) {
+    if (!dropdownBtn.contains(e.target)) {
+        if (currencyDropdown.contains(e.target)) {
+            changeCurrency();
+        } else {
+            currencyDropdown.classList.remove("opened");
+        }
+    }
+
+    function changeCurrency() {
+        let selectedLi;
+
+        if (e.target.classList.contains("dropdown-li")) {
+            selectedLi = e.target;
+        } else if (e.target.tagName === "SPAN") {
+            selectedLi = e.target.parentElement;
+        }
+
+        selectedCurrency.val = selectedLi.dataset.sign;
+
+        localStorage.setItem("selected-currency", selectedCurrency.val);
+
+        showSelected();
+
+        updateCurrencyOnPage();
+
+        function showSelected() {
+            const listItems = currencyDropdown.querySelectorAll("li");
+
+            //clears .selected from all list items
+            listItems.forEach((li) => {
+                li.classList.remove("selected");
+            });
+
+            selectedLi.classList.add("selected");
+        }
     }
 });
 
@@ -216,7 +269,7 @@ itemsCont.addEventListener("change", (e) => {
         }
 
         localStorage.setItem(
-            nameOfListItemsInLocalStorage,
+            listItemsInLocalStorage,
             JSON.stringify(list),
         );
     }
@@ -266,7 +319,7 @@ itemsCont.addEventListener("click", (e) => {
         e.target.classList.contains("open-delete-dialog") ||
         e.target.classList.contains("delete-item-svg") //handles any svgs that may receive the event
     ) {
-        itemToDelete = e.target.closest(".list-item");
+        liElemToDelete = e.target.closest(".list-item");
         deleteItemDialog.showModal();
     }
 });
@@ -277,32 +330,32 @@ deleteItemForm.addEventListener("submit", (e) => {
 
     const listOfItems = itemsArrFromLocalStorage();
 
+    const objToDelete = listOfItems.find(
+        (obj) => Number(liElemToDelete.id) === obj.id,
+    );
+
     //a list that filters out the item the user wants to delete, and remains the ones they want to keep
     const itemsToKeepInStorage = listOfItems.filter(
-        (obj) => Number(itemToDelete.id) !== obj.id,
+        (obj) => Number(liElemToDelete.id) !== obj.id,
     );
 
-    const listObjInLocalStorage = listOfItems.find(
-        (obj) => Number(itemToDelete.id) === obj.id,
-    );
-
-    //if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new list in local storage, with the selected list deleted
+    //if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new list in local storage, with the selected object deleted
     if (itemsToKeepInStorage.length === 0) {
-        localStorage.removeItem(nameOfListItemsInLocalStorage);
+        localStorage.removeItem(listItemsInLocalStorage);
         itemsCont.innerHTML = ""; //remove the list elements from the HTML as well
         getCurrentTotalElem().innerText = 0;
         toggle(); //display the "no lists container"
     } else {
         localStorage.setItem(
-            nameOfListItemsInLocalStorage,
+            listItemsInLocalStorage,
             JSON.stringify(itemsToKeepInStorage),
         );
-        itemToDelete.remove(); //removes the selected list from the DOM
+        liElemToDelete.remove(); //removes the selected list from the DOM
     }
 
-    updateTotal(listObjInLocalStorage);
+    updateTotal(objToDelete);
 
-    itemToDelete = null; //reset selected item to null so that another item can be stored inside in the future
+    liElemToDelete = null; //reset selected item to null so that another item can be stored inside in the future
 
     deleteItemDialog.close();
 });

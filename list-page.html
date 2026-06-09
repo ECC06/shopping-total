@@ -32,9 +32,44 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="item-price-input" class="add-item-label">Price (ghc)</label>
-                    <input class="item-data-input" type="number" step="any" name="item-price-input"
-                        id="item-price-input" required />
+                    <label for="item-price-input" class="add-item-label">Price (<span
+                            class="currency-sign">ghc</span>)</label>
+                    <div class="input-and-dropdown">
+                        <input class="item-data-input" type="number" step="any" name="item-price-input"
+                            id="item-price-input" required />
+                        <div>
+                            <button class="dropdown-btn" type="button">
+                                <span>₵</span>
+                                <span>Change</span>
+                                <span>⬇️</span>
+                            </button>
+
+                            <ul class="currency-dropdown opened">
+                                <div class="dropdown-wrapper">
+                                    <li data-sign="ghc" class="dropdown-li selected">
+                                        <span>₵</span>
+                                        <span class="fi fi-gh"></span>
+                                    </li>
+                                    <li data-sign="£" class="dropdown-li">
+                                        <span>£</span>
+                                        <span class="fi fi-gb"></span>
+                                    </li>
+                                    <li data-sign="€" class="dropdown-li">
+                                        <span>€</span>
+                                        <span class="fi fi-fr"></span>
+                                    </li>
+                                    <li data-sign="$" class="dropdown-li">
+                                        <span>$</span>
+                                        <span class="fi fi-us"></span>
+                                    </li>
+                                    <li data-sign="₦" class="dropdown-li">
+                                        <span>₦</span>
+                                        <span class="fi fi-ng"></span>
+                                    </li>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="item-form-buttons">
@@ -79,7 +114,7 @@
             </div>
 
             <div class="price-and-quantity">
-                <p class="price-cont"><span class="price"></span> ghc</p>
+                <p class="price-cont"><span class="price"></span> <span class="currency-sign">ghc</span></p>
 
                 <div class="quantity-controls">
                     <button class="minus-btn">
@@ -170,7 +205,7 @@
                         <span>Total:</span>
                         <span class="total-figure">
                             <span id="total">0</span>
-                            <span>ghc</span>
+                            <span class="currency-sign">ghc</span>
                         </span>
                     </h2>
                 </div>

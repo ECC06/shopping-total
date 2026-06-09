@@ -433,6 +433,20 @@ h1 {
     font-size: var(--font-size-28);
 }
 
+.currency-dropdown {
+    display: none;
+}
+
+.opened {
+    display: block;
+}
+
+.selected span:first-child {
+    color: red;
+}
+
+/* css here */
+
 .list-header {
     display: flex;
     justify-content: center;
@@ -671,18 +685,16 @@ h1 {
 
 .total-text,
 .total-figure {
+    display: flex;
     font-weight: var(--semi-bold);
     font-size: var(--font-size-44);
 }
 
 .total-figure {
     color: var(--green);
+    gap: 12px;
 }
 
-/* kept at the bottom so that no display style will override this one */
-.display-none {
-    display: none;
-}
 /* tablet size for list items */
 @media (max-width: 950px) {
     /* styles for different lists */
@@ -959,4 +971,16 @@ h1 {
     .total-figure {
         font-size: var(--font-size-32);
     }
+}
+
+/* kept at the bottom so that no display style will override them */
+
+.display-none {
+    display: none;
+}
+
+.reverse-order {
+    display: flex;
+    gap: 4px;
+    flex-direction: row-reverse;
 }

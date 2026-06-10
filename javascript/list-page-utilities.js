@@ -6,7 +6,7 @@ import {
     addItemsDialog,
     itemInfoForm,
     buttonsCont,
-    descInputElem,
+    descrInputElem,
     getCurrentTotalElem,
     itemObject,
     itemsArrFromLocalStorage,
@@ -18,38 +18,59 @@ import {
     priceInputElem,
     updateSubmitter,
     selectedCurrency,
-    formSubmitter
+    formSubmitter,
 } from "./list-page.js";
 
 import { addNewItemToLocalStorage } from "./shared.js";
 
 export function updateCurrencyOnPage() {
-    const priceConts = document.querySelectorAll(".price-cont");
+    const liElemPrices = document.querySelectorAll(".price-cont");
     const totalFigure = document.querySelector(".total-figure");
 
     const currencySignsList = document.querySelectorAll(".currency-sign");
 
     //update all signs in the ui
     currencySignsList.forEach((sign) => {
-        sign.textContent = `${selectedCurrency.val}`;
+        if (selectedCurrency.val === "₵") {
 
-        if (selectedCurrency.val !== "ghc") {
-            priceConts.forEach((priceCont) => {
-                priceCont.classList.add("reverse-order");
-            });
+            if (sign.parentElement.classList.contains("dropdown-btn")) {
+                sign.innerText = `${selectedCurrency.val}`;
+            } else {
+                sign.innerText = "ghc";
+            }
 
-            totalFigure.classList.add("reverse-order");
-        } else {
-            priceConts.forEach((priceCont) => {
+
+            liElemPrices.forEach((priceCont) => {
                 priceCont.classList.remove("reverse-order");
             });
 
             totalFigure.classList.remove("reverse-order");
+            return;
         }
 
+        //reverses the order of of the html elements if the sign isn't GHS, so you will have £9 instead of 9£
+        liElemPrices.forEach((priceCont) => {
+            priceCont.classList.add("reverse-order");
+        });
+
+        totalFigure.classList.add("reverse-order");
+
+        sign.innerText = `${selectedCurrency.val}`;
     });
 
+}
 
+//when page loads, add the "selected" class to the list item the user selected before reloading
+export function selectFormer() {
+    const listElems = Array.from(document.querySelectorAll(".dropdown-li"));
+
+    //find the list item that the "data-sign" attribute matches the selected currency
+    const listItemWithMatchingCurrency = listElems.find((li) => li.dataset.sign === selectedCurrency.val);
+
+    //clear "selected" class from all list items
+    listElems.forEach((li) => li.classList.remove("selected"));
+
+    listItemWithMatchingCurrency.classList.add("selected");
 }
 
 // returns true if the user tries to add an item with the same name and description. else, returns false
@@ -227,7 +248,7 @@ export function displayUpdateForm(event) {
             listItemToUpdate.querySelector(".description");
 
         nameInputElem.value = nameLabel.innerText;
-        descInputElem.value = descriptionElem.innerText;
+        descrInputElem.value = descriptionElem.innerText;
         priceInputElem.value = listItemInfoInLocalStorage.price;
     }
 }
@@ -266,7 +287,7 @@ export function updateItems() {
 
     //update the object with the user's input
     objToUpdate.itemName = nameInputElem.value;
-    objToUpdate.description = descInputElem.value;
+    objToUpdate.description = descrInputElem.value;
     objToUpdate.price = newPriceInput;
     objToUpdate.total = newItemTotal; //55
 
@@ -314,7 +335,7 @@ function storeFormInput() {
     const itemId = Math.floor(Math.random() * 90) + 10; //generates a number between 10 and 99 inclusive
     itemObject["id"] = itemId;
 
-    itemObject["description"] = descInputElem.value;
+    itemObject["description"] = descrInputElem.value;
     itemObject["price"] = Number(priceInputElem.value);
     itemObject["quantity"] = 1;
     itemObject["checked"] = false;

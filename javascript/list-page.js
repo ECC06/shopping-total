@@ -11,8 +11,10 @@ import {
     updateTotal,
     userDuplicatedItem,
     updateCurrencyOnPage,
-    putBackAddBtn
+    putBackAddBtn,
+    selectFormer,
 } from "./list-page-utilities.js";
+
 
 const listId = localStorage.getItem("list-id");
 export const listItemsInLocalStorage = `list-items-for-${listId}`;
@@ -21,7 +23,7 @@ export const listTotalInLocalStorage = `list-total-for-${listId}`;
 const dropdownBtn = document.querySelector(".dropdown-btn");
 const currencyDropdown = document.querySelector(".currency-dropdown");
 const dropdownWrapper = document.querySelector(".dropdown-wrapper");
-export const selectedCurrency = { val: localStorage.getItem("selected-currency") ?? "ghc" };
+export const selectedCurrency = { val: localStorage.getItem("selected-currency") ?? "₵" };
 
 export const h1 = document.querySelector("h1");
 
@@ -38,7 +40,7 @@ const firstAddItemBtn = document.querySelector("#first-add-item-btn");
 const mainAddItemBtn = document.querySelector("#main-add-item-btn");
 export const itemsCont = document.querySelector("#items-cont");
 export const addItemFormElements = Array.from(itemInfoForm.elements);
-export const [nameInputElem, descInputElem, priceInputElem] =
+export const [nameInputElem, descrInputElem, priceInputElem] =
     addItemFormElements;
 
 const deleteItemDialog = document.querySelector("#delete-item-dialog");
@@ -72,6 +74,8 @@ backBtn.addEventListener("click", (e) => {
 //if local storage is not empty, this handler fetches the array of items from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", (e) => {
     h1.innerText = localStorage.getItem("list-name");
+
+    selectFormer();
 
     if (itemsArrFromLocalStorage()) {
         itemsArrFromLocalStorage().forEach((obj) => {
@@ -183,7 +187,9 @@ dropdownBtn.addEventListener("click", function () {
     currencyDropdown.classList.toggle("opened");
 });
 
-//closes the currency selector dropdown when user clicks outside of it
+
+
+/*closes the currency selector dropdown when user clicks outside of it*/
 document.addEventListener("click", function (e) {
     if (!dropdownBtn.contains(e.target)) {
         if (currencyDropdown.contains(e.target)) {
@@ -196,9 +202,10 @@ document.addEventListener("click", function (e) {
     function changeCurrency() {
         let selectedLi;
 
+        //ensures the li element is stored when the user clicks inside the dropdown
         if (e.target.classList.contains("dropdown-li")) {
             selectedLi = e.target;
-        } else if (e.target.tagName === "SPAN") {
+        } else if (e.target.tagName === "SPAN" && e.target.parentElement.classList.contains("dropdown-li")) {
             selectedLi = e.target.parentElement;
         }
 

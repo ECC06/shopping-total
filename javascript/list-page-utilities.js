@@ -17,13 +17,120 @@ import {
     listTotalInLocalStorage,
     priceInputElem,
     updateSubmitter,
-    selectedCurrency,
+    getSelectedCurrency,
     formSubmitter,
+    mainDropdown,
+    dialogDropdown,
 } from "./list-page.js";
 
 import { addNewItemToLocalStorage } from "./shared.js";
 
+export function changeCurrencyFont() {
+    const dropdownBtnSigns = document.querySelectorAll(".dropdown-btn-sign");
+
+    dropdownBtnSigns.forEach((span) => {
+        const innerSpan = span.querySelector(".currency-sign");
+
+        if (innerSpan.innerText !== "₵") {
+            innerSpan.style.transform = `translate(0.5px, 3px)`;
+        } else {
+            innerSpan.removeAttribute("style");
+        }
+
+        //default font family is Fredoka, but for naira and cedis, change to Varela Round
+        if (innerSpan.innerText === "₵" || innerSpan.innerText === "₦") {
+            innerSpan.style.fontFamily = `Varela Round`;
+        } else {
+            innerSpan.style.fontFamily = `Fredoka, sans-serif`;
+        }
+    });
+}
+
+//runs when the dropdown is open
+export function handleDropdown(e) {
+    //"this" is either the add items dialog or main element
+    let correctDropdown = this.querySelector(".currency-dropdown");
+
+    //sets the default currency selection based on the data in local storage
+    setDefaultSelection();
+
+    //opens the dropdown
+    if (e.target.closest(".dropdown-btn")) {
+        correctDropdown.classList.toggle("opened");
+    }
+
+    //changes the currency if the user clicks on a list item
+    if (e.target.closest((".dropdown-li"))) {
+        changeCurrency(e, correctDropdown);
+    }
+
+    //closes the dropdown if the user hovers outside of it
+    correctDropdown.addEventListener("mouseleave", closeOnOutsideHover);
+
+    //closes the dropdown if the user clicks outside of it
+    function closeOnOutsideHover() {
+        if (correctDropdown.classList.contains("opened")) {
+            if (!e.target.closest(".currency-dropdown")) {
+                correctDropdown.classList.remove("opened");
+            }
+        }
+    }
+}
+
+//when the dropdown is opened, add the "selected" class to the currency that's found in local storage
+export function setDefaultSelection() {
+    const allDropdowns = document.querySelectorAll(".currency-dropdown");
+
+    //targets all dropdown ul elements on the page
+    allDropdowns.forEach((dropdown) => {
+        const selectedCurrency = getSelectedCurrency();
+
+        const listElements = Array.from(dropdown.querySelectorAll(".dropdown-li"));
+
+        //find the list item that the "data-sign" attribute matches the selected currency
+        const listItemWithMatchingCurrency = listElements.find(
+            (li) => li.dataset.sign === selectedCurrency
+        );
+
+        //clear "selected" class from all list items
+        listElements.forEach((li) => li.classList.remove("selected"));
+
+        listItemWithMatchingCurrency.classList.add("selected");
+    });
+}
+
+export function changeCurrency(event, dropdown) {
+    let selectedLi = event.target;
+    const selectedCurrency = getSelectedCurrency();
+
+    //ensures the li element is stored when the user clicks inside the dropdown
+    if (event.target.tagName === "SPAN" && event.target.closest(".dropdown-li")) {
+        selectedLi = event.target.parentElement;
+    }
+
+    localStorage.setItem("selected-currency", selectedLi.dataset.sign);
+
+    showSelected();
+
+    updateCurrencyOnPage();
+
+    changeCurrencyFont();
+
+    //adds the .selected class to the clicked element
+    function showSelected() {
+        const listItems = dropdown.querySelectorAll("li");
+
+        //clears .selected from all list items
+        listItems.forEach((li) => {
+            li.classList.remove("selected");
+        });
+
+        selectedLi.classList.add("selected");
+    }
+}
+
 export function updateCurrencyOnPage() {
+    const selectedCurrency = getSelectedCurrency();
     const liElemPrices = document.querySelectorAll(".price-cont");
     const totalFigure = document.querySelector(".total-figure");
 
@@ -31,10 +138,10 @@ export function updateCurrencyOnPage() {
 
     //update all signs in the ui
     currencySignsList.forEach((sign) => {
-        if (selectedCurrency.val === "₵") {
+        if (selectedCurrency === "₵") {
 
-            if (sign.parentElement.classList.contains("dropdown-btn")) {
-                sign.innerText = `${selectedCurrency.val}`;
+            if (sign.parentElement.closest(".dropdown-btn")) {
+                sign.innerText = selectedCurrency;
             } else {
                 sign.innerText = "ghc";
             }
@@ -55,39 +162,39 @@ export function updateCurrencyOnPage() {
 
         totalFigure.classList.add("reverse-order");
 
-        sign.innerText = `${selectedCurrency.val}`;
+        sign.innerText = selectedCurrency;
     });
 
 }
 
-//when page loads, add the "selected" class to the list item the user selected before reloading
-export function selectFormer() {
-    const listElems = Array.from(document.querySelectorAll(".dropdown-li"));
-
-    //find the list item that the "data-sign" attribute matches the selected currency
-    const listItemWithMatchingCurrency = listElems.find((li) => li.dataset.sign === selectedCurrency.val);
-
-    //clear "selected" class from all list items
-    listElems.forEach((li) => li.classList.remove("selected"));
-
-    listItemWithMatchingCurrency.classList.add("selected");
+//close all dropdowns on the page
+export function closeDropdown(event) {
+    if (event.target.closest("main")) {
+        mainDropdown.classList.remove("opened");
+    } else if (event.target.closest("dialog")) {
+        dialogDropdown.classList.remove("opened");
+    }
 }
 
 // returns true if the user tries to add an item with the same name and description. else, returns false
-export function userDuplicatedItem(nameInput, descriptionInput) {
-    if (localStorage.getItem(listItemsInLocalStorage)) {
+export function userDuplicatedItem(nameInput, descriptionInput, priceInput) {
+    if (itemsArrFromLocalStorage()) {
+
+        //Check if data in form is identical to any data in local storage
         for (const obj of itemsArrFromLocalStorage()) {
             const namesIdentical = nameInput.toLowerCase() === obj["itemName"].toLowerCase(); //ice cream 
             const descriptionsIdentical = descriptionInput.toLowerCase() === obj["description"].toLowerCase(); //vanilla
+            const priceIdentical = priceInput === obj["price"]; //vanilla
 
-            if (namesIdentical && descriptionsIdentical) {
+            if (namesIdentical && descriptionsIdentical && priceIdentical) {
                 alert(
-                    `You already have this item!  Instead, you can increase its quantity to your liking.`,
+                    `You already have this item at this price. You could change the item's price, or increase it's quantity to your liking.`,
                 );
                 return true;
+            } else {
+                return false;
             }
         }
-        return false;
     }
 }
 
@@ -219,7 +326,6 @@ export function createNewItem() {
         toggle();
     }
 
-    addItemsDialog.close();
 }
 
 export function displayUpdateForm(event) {
@@ -265,32 +371,19 @@ export function putBackAddBtn() {
     formSubmitter.innerText = "Add item";
 }
 
-export function updateItems() {
+export function updateItems(newPriceInput) {
     const arrFromLocalStorage = itemsArrFromLocalStorage();
-
-    let increase = null;
-    let decrease = null; //5
 
     //object to update in local storage
     const objToUpdate = arrFromLocalStorage.find((obj) => Number(itemToUpdate.item.id) === obj.id);
 
-    //calculate the new total of the list and determine whether there was increase or decrease based on the user's input
-    const formerItemTotal = objToUpdate.total; // 60
-    const newPriceInput = Number(priceInputElem.value); //55
-    const newItemTotal = newPriceInput * objToUpdate.quantity; //55*1
-
-    if (formerItemTotal < newItemTotal) {
-        increase = newItemTotal - formerItemTotal; //5 cedis
-    } else if (formerItemTotal > newItemTotal) {
-        decrease = formerItemTotal - newItemTotal;
-    }
+    const priceDifferenceObj = updateItemTotal(newPriceInput, objToUpdate);
 
     //update the object with the user's input
     objToUpdate.itemName = nameInputElem.value;
     objToUpdate.description = descrInputElem.value;
     objToUpdate.price = newPriceInput;
-    objToUpdate.total = newItemTotal; //55
-
+    objToUpdate.total = priceDifferenceObj.newTotal; //55
 
     //store the updated arr
     localStorage.setItem(
@@ -298,22 +391,43 @@ export function updateItems() {
         JSON.stringify(arrFromLocalStorage),
     );
 
-    populateItem(objToUpdate, itemToUpdate.item); //update list items in HTML
+    //update list item in HTML
+    populateItem(objToUpdate, itemToUpdate.item);
 
-    updateListTotal(increase, decrease); //update list total in local storage and html
+    //clears this variable so that another item the user wants to update can take it's place
+    itemToUpdate.item = null;
 
-    itemToUpdate.item = null; //clears this variable so that another item the user wants to update can take it's place
-
-    addItemsDialog.close();
+    //update the list total
+    updateListTotal(priceDifferenceObj);
 }
 
+
+//calculate the difference between the former item's price and the new item's price
+function updateItemTotal(priceInput, obj) {
+    const formerItemTotal = obj.total; // e.g 60
+    const newTotal = priceInput * obj.quantity; //e.g 55*1
+
+    let increase;
+    let decrease;
+
+    if (formerItemTotal < newTotal) {
+        increase = newTotal - formerItemTotal;
+    } else if (formerItemTotal > newTotal) {
+        decrease = formerItemTotal - newTotal; //5
+    }
+
+    return { increase, decrease, newTotal };
+
+}
+
+
 //updates the list total in HTML and in local storage
-function updateListTotal(increase, decrease) {
+function updateListTotal({ increase, decrease }) {
     let finalValue = null;
+
     const totalElem = getCurrentTotalElem();
     const listTotal = Number(totalElem.innerText);
 
-    //could be less verbose but...
     if (increase) {
         finalValue = listTotal + increase;
     } else if (decrease) {

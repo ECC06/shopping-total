@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="./styles.css" />
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <script type="module" src="./javascript/list-page.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css">
 </head>
 
 <body>
     <button type="submit" id="update-item-submitter" class="update-item-submitter display-none">
         Update
     </button>
-    <dialog id="add-items-dialog" class="add-items-dialog" open>
+    <dialog id="add-items-dialog" class="add-items-dialog">
         <article class="dialog-content">
             <span class="db-click-info">Double click a list item to edit it</span>
 
@@ -36,35 +37,37 @@
                         Price (<span class="currency-sign">ghc</span>)
                     </label>
                     <div class="input-and-dropdown">
-                        <input class="item-data-input" type="number" step="any" name="item-price-input"
+                        <input class="item-data-input" type="number" min="1" step="any" name="item-price-input"
                             id="item-price-input" required />
-                        <div class="button-and-dropdown">
+                        <div class="btn-and-dropdown">
                             <button class="dropdown-btn" type="button">
-                                <span class="currency-sign dropdown">₵</span>
+                                <div class="dropdown-btn-sign">
+                                    <span class="currency-sign">₵</span>
+                                </div>
                                 <span class="dropdown-btn-text">Change</span>
                                 <!-- after element inserted here -->
                             </button>
 
-                            <ul class="currency-dropdown opened">
+                            <ul class="currency-dropdown">
                                 <div class="dropdown-wrapper">
                                     <li data-sign="₵" class="dropdown-li selected">
-                                        <span>₵</span>
+                                        <span class="dropdown-sign">₵</span>
                                         <span class="fi fi-gh"></span>
                                     </li>
                                     <li data-sign="£" class="dropdown-li">
-                                        <span>£</span>
+                                        <span class="dropdown-sign">£</span>
                                         <span class="fi fi-gb"></span>
                                     </li>
                                     <li data-sign="€" class="dropdown-li">
-                                        <span>€</span>
+                                        <span class="dropdown-sign">€</span>
                                         <span class="fi fi-fr"></span>
                                     </li>
                                     <li data-sign="$" class="dropdown-li">
-                                        <span>$</span>
+                                        <span class="dropdown-sign">$</span>
                                         <span class="fi fi-us"></span>
                                     </li>
                                     <li data-sign="₦" class="dropdown-li">
-                                        <span>₦</span>
+                                        <span class="dropdown-sign">₦</span>
                                         <span class="fi fi-ng"></span>
                                     </li>
                                 </div>
@@ -186,17 +189,55 @@
         </article>
 
         <article id="items-and-add-btn-cont" class="items-and-add-btn-cont display-none">
-            <button id="main-add-item-btn" class="main-add-item-btn">
-                <div class="add-button-wrapper">
-                    <span>Add an item</span>
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="16" cy="16" r="16" fill="#3EC300" fill-opacity="0.87" />
-                        <rect x="14.8245" y="7.49316" width="2.81983" height="17.4829" rx="1.40991" fill="white" />
-                        <rect x="24.4119" y="14.9854" width="2.81983" height="16.919" rx="1.40991"
-                            transform="rotate(90 24.4119 14.9854)" fill="white" />
-                    </svg>
+            <!-- add item button and change currency button -->
+            <div class="top-buttons">
+                <button id="main-add-item-btn" class="main-add-item-btn">
+                    <div class="add-button-wrapper">
+                        <span>Add an item</span>
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="16" fill="#3EC300" fill-opacity="0.87" />
+                            <rect x="14.8245" y="7.49316" width="2.81983" height="17.4829" rx="1.40991" fill="white" />
+                            <rect x="24.4119" y="14.9854" width="2.81983" height="16.919" rx="1.40991"
+                                transform="rotate(90 24.4119 14.9854)" fill="white" />
+                        </svg>
+                    </div>
+                </button>
+
+                <div class="btn-and-dropdown">
+                    <button class="dropdown-btn" type="button">
+                        <div class="dropdown-btn-sign">
+                            <span class="currency-sign">₵</span>
+                        </div>
+                        <span class="dropdown-btn-text">Change</span>
+                        <!-- after element inserted here -->
+                    </button>
+
+                    <ul class="currency-dropdown">
+                        <div class="dropdown-wrapper">
+                            <li data-sign="₵" class="dropdown-li">
+                                <span class="dropdown-sign">₵</span>
+                                <span class="fi fi-gh"></span>
+                            </li>
+                            <li data-sign="£" class="dropdown-li">
+                                <span class="dropdown-sign">£</span>
+                                <span class="fi fi-gb"></span>
+                            </li>
+                            <li data-sign="€" class="dropdown-li">
+                                <span class="dropdown-sign">€</span>
+                                <span class="fi fi-fr"></span>
+                            </li>
+                            <li data-sign="$" class="dropdown-li">
+                                <span class="dropdown-sign">$</span>
+                                <span class="fi fi-us"></span>
+                            </li>
+                            <li data-sign="₦" class="dropdown-li selected">
+                                <span class="dropdown-sign">₦</span>
+                                <span class="fi fi-ng"></span>
+                            </li>
+                        </div>
+                    </ul>
                 </div>
-            </button>
+            </div>
 
             <div class="list-and-total-cont">
                 <ul id="items-cont" class="items-cont"></ul>

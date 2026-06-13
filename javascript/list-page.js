@@ -12,7 +12,11 @@ import {
     userDuplicatedItem,
     updateCurrencyOnPage,
     putBackAddBtn,
-    selectFormer,
+    setDefaultSelection,
+    changeCurrency,
+    handleDropdown,
+    changeCurrencyFont,
+    closeDropdown
 } from "./list-page-utilities.js";
 
 
@@ -20,12 +24,20 @@ const listId = localStorage.getItem("list-id");
 export const listItemsInLocalStorage = `list-items-for-${listId}`;
 export const listTotalInLocalStorage = `list-total-for-${listId}`;
 
+export const mainDropdown = document.querySelector("main .currency-dropdown");
+export const dialogDropdown = document.querySelector("dialog .currency-dropdown");
+
 const dropdownBtn = document.querySelector(".dropdown-btn");
-const currencyDropdown = document.querySelector(".currency-dropdown");
 const dropdownWrapper = document.querySelector(".dropdown-wrapper");
-export const selectedCurrency = { val: localStorage.getItem("selected-currency") ?? "₵" };
+export const getSelectedCurrency = () =>
+    localStorage.getItem("selected-currency") ?? "₵";
+
+const main = document.querySelector("main");
 
 export const h1 = document.querySelector("h1");
+
+//close dropdown
+
 
 // add/update items dialog variables
 export const addItemsDialog = document.querySelector("#add-items-dialog");
@@ -55,6 +67,7 @@ export const itemObject = {};
 export const getCurrentTotalElem = () => document.querySelector("#total");
 
 export const itemToUpdate = { item: null };
+
 let liElemToDelete = null;
 
 export const itemsArrFromLocalStorage = () =>
@@ -75,9 +88,8 @@ backBtn.addEventListener("click", (e) => {
 document.addEventListener("DOMContentLoaded", (e) => {
     h1.innerText = localStorage.getItem("list-name");
 
-    selectFormer();
+    if (itemsArrFromLocalStorage()) {//sets the default currency selection based on the data in local storage
 
-    if (itemsArrFromLocalStorage()) {
         itemsArrFromLocalStorage().forEach((obj) => {
             addItemToHTML(obj);
         });
@@ -91,6 +103,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
         toggle();
 
         updateCurrencyOnPage();
+
+        setDefaultSelection();
+
+        changeCurrencyFont(); //changes the font of these signs: ₵ & ₦
     }
 });
 
@@ -142,12 +158,15 @@ new Sortable(itemsCont, {
 //first button that handles the opening of a form for adding list items
 firstAddItemBtn.addEventListener("click", (e) => {
     clearForm();
+    closeDropdown(e);
     addItemsDialog.showModal();
+    changeCurrencyFont();
 });
 
 //second button that handles the opening of a form for adding list items
 mainAddItemBtn.addEventListener("click", (e) => {
     clearForm();
+    closeDropdown(e);
     addItemsDialog.showModal();
 });
 
@@ -182,53 +201,9 @@ itemsCont.addEventListener("click", (e) => {
     }
 });
 
-//closes and opens the currency selector dropdown
-dropdownBtn.addEventListener("click", function () {
-    currencyDropdown.classList.toggle("opened");
-});
 
-
-
-/*closes the currency selector dropdown when user clicks outside of it*/
-document.addEventListener("click", function (e) {
-    if (!dropdownBtn.contains(e.target)) {
-        if (currencyDropdown.contains(e.target)) {
-            changeCurrency();
-        } else {
-            currencyDropdown.classList.remove("opened");
-        }
-    }
-
-    function changeCurrency() {
-        let selectedLi;
-
-        //ensures the li element is stored when the user clicks inside the dropdown
-        if (e.target.classList.contains("dropdown-li")) {
-            selectedLi = e.target;
-        } else if (e.target.tagName === "SPAN" && e.target.parentElement.classList.contains("dropdown-li")) {
-            selectedLi = e.target.parentElement;
-        }
-
-        selectedCurrency.val = selectedLi.dataset.sign;
-
-        localStorage.setItem("selected-currency", selectedCurrency.val);
-
-        showSelected();
-
-        updateCurrencyOnPage();
-
-        function showSelected() {
-            const listItems = currencyDropdown.querySelectorAll("li");
-
-            //clears .selected from all list items
-            listItems.forEach((li) => {
-                li.classList.remove("selected");
-            });
-
-            selectedLi.classList.add("selected");
-        }
-    }
-});
+addItemsDialog.addEventListener("click", handleDropdown);
+main.addEventListener("click", handleDropdown);
 
 //closes the form for adding/updating items
 cancelBtn.addEventListener("click", (e) => {
@@ -236,6 +211,7 @@ cancelBtn.addEventListener("click", (e) => {
         putBackAddBtn();
     }
 
+    closeDropdown(e);
     addItemsDialog.close();
 });
 
@@ -245,16 +221,30 @@ itemInfoForm.addEventListener("submit", (e) => {
 
     const nameInput = nameInputElem.value.trim();
     const descriptionInput = itemInfoForm.querySelector("#item-desc-input").value.trim();
+    const priceInput = Number(priceInputElem.value);
 
     if (e.submitter.id === "add-item-submitter") {
-        if (!userDuplicatedItem(nameInput, descriptionInput)) {
+        if (!userDuplicatedItem(nameInput, descriptionInput, priceInput)) {
             createNewItem();
+            closeDropdown(e);
+            addItemsDialog.close();
+
         }
     }
 
     if (e.submitter.id === "update-item-submitter") {
-        updateItems();
-        putBackAddBtn();
+        const itemFormerPrice = Number(itemToUpdate.item.querySelector(".price").innerText);
+
+        if (
+            !userDuplicatedItem(nameInput, descriptionInput, priceInput)
+            && (priceInput !== itemFormerPrice)
+        ) {
+            updateItems(priceInput);
+
+            addItemsDialog.close();
+            closeDropdown(e);
+            putBackAddBtn();
+        }
     }
 });
 
@@ -355,8 +345,20 @@ deleteItemForm.addEventListener("submit", (e) => {
     if (itemsToKeepInStorage.length === 0) {
         localStorage.removeItem(listItemsInLocalStorage);
         localStorage.removeItem(listTotalInLocalStorage);
+
+        // set the text of the dropdown sign back to default in HTML and local storage
+        const dropdownBtnSigns = document.querySelectorAll(".dropdown-btn-sign .currency-sign");
+
+        dropdownBtnSigns.forEach((sign) => sign.innerText = "₵");
+
+        localStorage.setItem("selected-currency", "₵");
+
+        setDefaultSelection();
+
         itemsCont.innerHTML = ""; //remove the list elements from the HTML as well
+
         getCurrentTotalElem().innerText = 0;
+
         toggle(); //display the "no lists container"
     } else {
         localStorage.setItem(

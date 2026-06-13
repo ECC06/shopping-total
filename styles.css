@@ -1,4 +1,8 @@
+/* Fredokka Sans font */
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap");
+
+/* Noto sans */
+@import url("https://fonts.googleapis.com/css2?family=Varela+Round&display=swap");
 
 /* *GLOBAL STYLES */
 
@@ -6,7 +10,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Fredoka", sans-serif;
 }
 
 :root {
@@ -59,11 +62,11 @@ dialog {
     padding: 28px;
     border-radius: 20px;
     border: none;
-    z-index: 2;
     position: absolute;
     left: 50%;
-    translate: -50% 0;
-    top: 5%;
+    top: 50%;
+    translate: -50% -50%;
+    overflow: visible;
 }
 
 dialog::backdrop {
@@ -245,8 +248,20 @@ main {
 
 /* !SPECIFIC STYLES */
 
+html,
+body {
+    min-height: 100vh;
+}
+
 body {
     background-color: var(--tainted-sephia);
+    margin-bottom: 100px;
+}
+
+body,
+input,
+button {
+    font-family: "Fredoka", sans-serif;
 }
 
 header {
@@ -400,8 +415,6 @@ h1 {
     height: 300px;
 }
 
-/* *------------LIST PAGE--------------------- */
-
 .add-items-dialog article {
     translate: 0 3%;
 }
@@ -419,6 +432,7 @@ h1 {
 .add-items-form {
     width: 100%;
     justify-content: space-between;
+    position: relative;
 }
 
 .add-items-form > .form-field {
@@ -433,62 +447,142 @@ h1 {
     font-size: var(--font-size-28);
 }
 
+/* -----dropdown button in dialog-------- */
+
 .input-and-dropdown {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.button-and-dropdown {
-    width: 180px;
+.btn-and-dropdown {
     height: 52px;
+    position: relative;
 }
 
-.currency-sign.dropdown {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    color: white;
-    background-color: var(--green);
-    font-weight: var(--regular);
-    font-size: var(--font-size-20);
+.dropdown-btn,
+.currency-dropdown {
+    background-color: white;
+    color: var(--green);
+    cursor: pointer;
 }
 
 .dropdown-btn {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     position: relative;
     width: 100%;
     height: 100%;
     padding: 4px 8px;
-    font-size: var(--font-size-20);
-    outline: 4px solid var(--green);
+    font-size: var(--font-size-24);
     border: none;
+    font-weight: 500;
+    outline: 3.5px solid var(--green);
     border-radius: 8px;
 }
 
-/* .dropdown-btn-text::after {
+.dropdown-btn-sign,
+.dropdown-sign {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.dropdown-btn-sign,
+.selected > .dropdown-sign,
+.fi {
+    font-size: var(--font-size-24);
+}
+
+.dropdown-btn-sign {
+    color: white;
+    background-color: var(--green);
+    font-weight: var(--regular);
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-and-dropdown:hover .dropdown-btn-sign {
+    scale: 1.15;
+}
+
+.dropdown-btn-sign .currency-sign {
+    display: block;
+    transform: translate(-0.5px, 4px);
+}
+
+.dropdown-btn-text {
+    display: flex;
+    gap: 8px;
+}
+
+.dropdown-btn-text::after {
     content: url("./designAssets/icons/dropdown-icon.svg");
     display: inline-block;
-} */
+    transition: all 0.3s;
+}
+
+.btn-and-dropdown:has(.opened) .dropdown-btn-text::after {
+    rotate: 180deg;
+    transform: translateY(-4px);
+}
 
 .currency-dropdown {
     position: absolute;
-    display: none;
+    z-index: 1;
+    left: -5px;
+    top: 135%;
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    padding: 0;
+    width: 185px;
+    border-radius: 12px;
+    transition: all 0.3s ease-out;
+}
+
+.dropdown-wrapper {
+    width: 100%;
+    min-height: 0;
 }
 
 .opened {
-    display: block;
+    padding: 8px 0;
+    grid-template-rows: 1fr;
+    box-shadow: 0px 8px 20px 8px rgba(0, 0, 0, 0.15);
 }
 
-.selected span:first-child {
-    color: red;
+/* .dropdown-btn-sign {
+    font-family: "Fredoka", sans-serif;
+} */
+
+.dropdown-li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    font-weight: 400;
+    font-size: var(--font-size-28);
 }
 
-/* css here */
+.dropdown-li:is(:first-child, :last-child) .dropdown-sign {
+    font-family: "Varela Round";
+}
+
+.dropdown-sign {
+    display: grid;
+    place-items: center;
+}
+
+.selected > .dropdown-sign,
+.dropdown-li:hover > .dropdown-sign {
+    width: 38px;
+    height: 38px;
+    color: white;
+    background-color: var(--green);
+    font-size: 25px;
+}
 
 .list-header {
     display: flex;
@@ -499,7 +593,7 @@ h1 {
 .header-content,
 .items-main {
     width: 90%;
-    max-width: 1200px;
+    max-width: 1000px;
 }
 
 .header-content {
@@ -533,6 +627,35 @@ h1 {
 
 .items-and-add-btn-cont {
     width: 100%;
+}
+
+/* add item button and change currency button */
+.top-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+main .dropdown-btn {
+    font-size: var(--font-size-20);
+}
+
+main .dropdown-btn-sign {
+    width: 32px;
+    height: 32px;
+    font-size: 22px;
+}
+
+main .dropdown-btn {
+    gap: 8px;
+    outline-width: 3px;
+    font-size: var(--font-size-24);
+    font-weight: var(--regular);
+}
+
+/* its a grid */
+main .dropdown-btn-text {
+    gap: 16px;
 }
 
 .main-add-item-btn {
@@ -744,6 +867,7 @@ h1 {
     .name-and-edit {
         align-items: center;
     }
+
     .list-item-bottom {
         flex-direction: column;
         align-items: start;
@@ -760,9 +884,13 @@ h1 {
     }
 
     /* styles for list items */
+
     .list-item-wrapper {
+        position: relative;
         flex-direction: column;
         align-items: start;
+        gap: 4px;
+        width: 99%;
     }
 
     .check-and-description,
@@ -771,25 +899,10 @@ h1 {
         gap: 20px;
     }
 
-    .edit-item-btn {
-        width: 0;
-        display: none;
-    }
-
-    .edit-and-delete-btn {
-        border: 0;
-    }
-
     .check {
         width: 30px;
         height: 26.4px;
         margin-top: -4px;
-    }
-
-    .list-item-wrapper {
-        position: relative;
-        gap: 0;
-        width: 99%;
     }
 
     .list-item {
@@ -810,20 +923,23 @@ h1 {
     }
 
     .price-cont {
-        font-size: var(--font-size-20);
+        font-size: var(--font-size-24);
         padding-left: 48px;
+    }
+
+    .edit-and-delete-btn {
+        top: 0;
+        right: 0;
+        position: absolute;
+    }
+
+    .delete-item-btn {
+        transform: translateY(-1.5px);
     }
 
     .total-text,
     .total-figure {
         font-size: var(--font-size-44);
-    }
-
-    .delete-item-btn {
-        top: 0;
-        right: 0;
-        position: absolute;
-        width: 25px;
     }
 }
 
@@ -886,17 +1002,17 @@ h1 {
     }
 
     .header-content {
-        justify-content: space-between;
+        justify-content: start;
         align-items: center;
     }
 
     .list-h1 {
-        font-size: var(--font-size-44);
+        font-size: var(--font-size-40);
+        margin: 0 auto;
     }
 
     .back-btn {
         position: static;
-        order: 2;
         margin-top: 8px;
     }
 }
@@ -910,6 +1026,10 @@ h1 {
         font-size: var(--font-size-32);
     }
 
+    .input-and-dropdown {
+        flex-wrap: wrap;
+    }
+
     header {
         height: 80px;
     }
@@ -919,7 +1039,7 @@ h1 {
     }
 
     .db-click-info {
-        font-size: 16px;
+        font-size: var(font-size-20);
     }
 
     .name-list-label {
@@ -929,6 +1049,7 @@ h1 {
     .list-name-input {
         height: 55px;
     }
+
     .add-list-form-buttons {
         gap: 16px;
     }
@@ -988,8 +1109,23 @@ h1 {
         font-size: var(--font-size-40);
     }
 
+    .top-buttons {
+        flex-direction: column;
+        row-gap: 20px;
+        align-items: end;
+    }
+
     .main-add-item-btn {
-        font-size: var(--font-size-20);
+        padding: 0 6px;
+        font-size: 22px;
+    }
+
+    .dropdown-btn {
+        height: 50px;
+    }
+
+    .edit-item-btn {
+        display: none;
     }
 
     .price-and-quantity {

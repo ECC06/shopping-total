@@ -530,3 +530,27 @@ export function updateTotal(listDataObj) {
     localStorage.setItem(listTotalInLocalStorage, newTotal);
     getCurrentTotalElem().innerText = newTotal;
 }
+
+export function remainingItems(liElem) {
+    const listOfItems = itemsArrFromLocalStorage();
+
+    const objToDelete = listOfItems.find(
+        (obj) => Number(liElem.id) === obj.id,
+    );
+
+    //a list that filters out the item the user wants to delete, and remains the ones they want to keep
+    const itemsToKeepInStorage = listOfItems.filter(
+        (obj) => Number(liElem.id) !== obj.id,
+    );
+
+    return itemsToKeepInStorage;
+}
+
+export function resetSignsOnPage() {
+    const dropdownBtnSigns = document.querySelectorAll(".dropdown-btn-sign .currency-sign");
+
+    dropdownBtnSigns.forEach((sign) => sign.innerText = "₵");
+
+    //default selection is set to cedis
+    setDefaultSelection();
+}

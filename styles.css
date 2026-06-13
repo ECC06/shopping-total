@@ -58,7 +58,6 @@
 dialog {
     /* center all dialog boxes */
     width: min(90%, 1000px); /*width, max-width*/
-    min-height: 600px;
     padding: 28px;
     border-radius: 20px;
     border: none;
@@ -67,6 +66,11 @@ dialog {
     top: 50%;
     translate: -50% -50%;
     overflow: visible;
+}
+
+.add-items-dialog,
+.delete-item-dialog {
+    min-height: 600px;
 }
 
 dialog::backdrop {
@@ -745,7 +749,7 @@ main .dropdown-btn-text {
 
 .check {
     width: 34px;
-    height: 30px;
+    height: 28px;
     -webkit-appearance: none; /* For WebKit browsers like Chrome, Safari */
     -moz-appearance: none; /* For Mozilla browsers like Firefox */
     appearance: none; /*Standard property */
@@ -900,8 +904,8 @@ main .dropdown-btn-text {
     }
 
     .check {
-        width: 30px;
-        height: 26.4px;
+        width: 34px;
+        height: 28px;
         margin-top: -4px;
     }
 

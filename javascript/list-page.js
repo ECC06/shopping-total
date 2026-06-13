@@ -16,7 +16,9 @@ import {
     changeCurrency,
     handleDropdown,
     changeCurrencyFont,
-    closeDropdown
+    closeDropdown,
+    remainingItems,
+    resetSignsOnPage
 } from "./list-page-utilities.js";
 
 
@@ -35,9 +37,6 @@ export const getSelectedCurrency = () =>
 const main = document.querySelector("main");
 
 export const h1 = document.querySelector("h1");
-
-//close dropdown
-
 
 // add/update items dialog variables
 export const addItemsDialog = document.querySelector("#add-items-dialog");
@@ -330,41 +329,29 @@ itemsCont.addEventListener("click", (e) => {
 deleteItemForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const listOfItems = itemsArrFromLocalStorage();
-
-    const objToDelete = listOfItems.find(
-        (obj) => Number(liElemToDelete.id) === obj.id,
-    );
-
-    //a list that filters out the item the user wants to delete, and remains the ones they want to keep
-    const itemsToKeepInStorage = listOfItems.filter(
-        (obj) => Number(liElemToDelete.id) !== obj.id,
-    );
+    const itemsArr = remainingItems(liElemToDelete);
 
     //if there's no items left to store in the local storage array, then remove the array from local storage completely. Else, store the new list in local storage, with the selected object deleted
-    if (itemsToKeepInStorage.length === 0) {
+    if (itemsArr.length === 0) {
         localStorage.removeItem(listItemsInLocalStorage);
         localStorage.removeItem(listTotalInLocalStorage);
-
-        // set the text of the dropdown sign back to default in HTML and local storage
-        const dropdownBtnSigns = document.querySelectorAll(".dropdown-btn-sign .currency-sign");
-
-        dropdownBtnSigns.forEach((sign) => sign.innerText = "₵");
-
         localStorage.setItem("selected-currency", "₵");
 
-        setDefaultSelection();
+        // reset signs on the page to cedis
+        resetSignsOnPage();
+
+        //set the total in HTML to 0
+        getCurrentTotalElem().innerText = 0;
 
         itemsCont.innerHTML = ""; //remove the list elements from the HTML as well
-
-        getCurrentTotalElem().innerText = 0;
 
         toggle(); //display the "no lists container"
     } else {
         localStorage.setItem(
             listItemsInLocalStorage,
-            JSON.stringify(itemsToKeepInStorage),
+            JSON.stringify(itemsArr),
         );
+
         liElemToDelete.remove(); //removes the selected list from the DOM
 
         updateTotal(objToDelete);

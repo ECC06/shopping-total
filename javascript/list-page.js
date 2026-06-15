@@ -7,9 +7,7 @@ import {
     displayUpdateForm,
     manipulateQuantity,
     toggle,
-    updateItems,
-    updateTotal,
-    userDuplicatedItem,
+    updateTotalPostDelete,
     updateCurrencyOnPage,
     putBackAddBtn,
     setDefaultSelection,
@@ -18,7 +16,8 @@ import {
     changeCurrencyFont,
     closeDropdown,
     remainingItems,
-    resetSignsOnPage
+    resetSignsOnPage,
+    validateBeforeUpdate,
 } from "./list-page-utilities.js";
 
 
@@ -70,7 +69,7 @@ export const itemToUpdate = { item: null };
 let liElemToDelete = null;
 
 export const itemsArrFromLocalStorage = () =>
-    JSON.parse(localStorage.getItem(listItemsInLocalStorage));
+    JSON.parse(localStorage.getItem(listItemsInLocalStorage)) ?? [];
 
 backBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -85,9 +84,10 @@ backBtn.addEventListener("click", (e) => {
 //!READ lists items in local storage
 //if local storage is not empty, this handler fetches the array of items from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", (e) => {
-    h1.innerText = localStorage.getItem("list-name");
+    if (itemsArrFromLocalStorage().length > 0) {
+        h1.innerText = localStorage.getItem("list-name");
 
-    if (itemsArrFromLocalStorage()) {//sets the default currency selection based on the data in local storage
+        //sets the default currency selection based on the data in local storage
 
         itemsArrFromLocalStorage().forEach((obj) => {
             addItemToHTML(obj);
@@ -100,13 +100,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
         checkPreviouslyCheckedItems();
 
         toggle();
-
-        updateCurrencyOnPage();
-
-        setDefaultSelection();
-
-        changeCurrencyFont(); //changes the font of these signs: ₵ & ₦
     }
+
+    updateCurrencyOnPage();
+
+    setDefaultSelection();
+
+    changeCurrencyFont(); //changes the font of these signs: ₵ & ₦
 });
 
 // !!RE-ORDER LIST ITEMS
@@ -219,32 +219,40 @@ itemInfoForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const nameInput = nameInputElem.value.trim();
-    const descriptionInput = itemInfoForm.querySelector("#item-desc-input").value.trim();
+    const descriptionInput = descrInputElem.value.trim();
     const priceInput = Number(priceInputElem.value);
 
+    const formInputs = { nameInput, descriptionInput, priceInput };
+
+    const duplicateFound = itemsArrFromLocalStorage().some((obj) => {
+        return (obj.itemName === nameInput) &&
+            (obj.description === descriptionInput)
+    });
+
     if (e.submitter.id === "add-item-submitter") {
-        if (!userDuplicatedItem(nameInput, descriptionInput, priceInput)) {
+        //prevents user from entering duplicate item names and descriptions
+        if (duplicateFound) {
+            alert("You already have this item! You can increase it's quantity, or increase it's price");
+            return;
+        } else {
             createNewItem();
             closeDropdown(e);
             addItemsDialog.close();
-
         }
     }
 
     if (e.submitter.id === "update-item-submitter") {
-        const itemFormerPrice = Number(itemToUpdate.item.querySelector(".price").innerText);
+        validateBeforeUpdate(formInputs);
 
-        if (
-            !userDuplicatedItem(nameInput, descriptionInput, priceInput)
-            && (priceInput !== itemFormerPrice)
-        ) {
-            updateItems(priceInput);
+        itemToUpdate.item = null;
 
-            addItemsDialog.close();
-            closeDropdown(e);
-            putBackAddBtn();
-        }
+        closeDropdown(e);
+        putBackAddBtn();
+
+        addItemsDialog.close();
+
     }
+
 });
 
 //stores the checked state of an item in local storage
@@ -347,6 +355,15 @@ deleteItemForm.addEventListener("submit", (e) => {
 
         toggle(); //display the "no lists container"
     } else {
+
+        const objToDelete = itemsArrFromLocalStorage().find(
+            (obj) => obj.id === Number(listElemToDelete.id)
+        );
+
+        console.log(objToDelete);
+        return;
+
+
         localStorage.setItem(
             listItemsInLocalStorage,
             JSON.stringify(itemsArr),
@@ -354,7 +371,7 @@ deleteItemForm.addEventListener("submit", (e) => {
 
         liElemToDelete.remove(); //removes the selected list from the DOM
 
-        updateTotal(objToDelete);
+        updateTotalPostDelete(objToDelete);
     }
 
     liElemToDelete = null; //reset selected item to null so that another item can be stored inside in the future

@@ -176,28 +176,6 @@ export function closeDropdown(event) {
     }
 }
 
-// returns true if the user tries to add an item with the same name and description. else, returns false
-export function userDuplicatedItem(nameInput, descriptionInput, priceInput) {
-    if (itemsArrFromLocalStorage()) {
-
-        //Check if data in form is identical to any data in local storage
-        for (const obj of itemsArrFromLocalStorage()) {
-            const namesIdentical = nameInput.toLowerCase() === obj["itemName"].toLowerCase(); //ice cream 
-            const descriptionsIdentical = descriptionInput.toLowerCase() === obj["description"].toLowerCase(); //vanilla
-            const priceIdentical = priceInput === obj["price"]; //vanilla
-
-            if (namesIdentical && descriptionsIdentical && priceIdentical) {
-                alert(
-                    `You already have this item at this price. You could change the item's price, or increase it's quantity to your liking.`,
-                );
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-}
-
 export function manipulateQuantity(buttonElem) {
     let originalPrice = null;
     const listElem = buttonElem.closest(".list-item");
@@ -371,58 +349,91 @@ export function putBackAddBtn() {
     formSubmitter.innerText = "Add item";
 }
 
-export function updateItems(newPriceInput) {
-    const arrFromLocalStorage = itemsArrFromLocalStorage();
+//check if user has previously updated
+export function validateBeforeUpdate(formInputsObj) {
 
-    //object to update in local storage
-    const objToUpdate = arrFromLocalStorage.find((obj) => Number(itemToUpdate.item.id) === obj.id);
+    const listObjects = itemsArrFromLocalStorage();
 
-    const priceDifferenceObj = updateItemTotal(newPriceInput, objToUpdate);
+    const listItemId = Number(itemToUpdate.item.id);
 
-    //update the object with the user's input
-    objToUpdate.itemName = nameInputElem.value;
-    objToUpdate.description = descrInputElem.value;
-    objToUpdate.price = newPriceInput;
-    objToUpdate.total = priceDifferenceObj.newTotal; //55
+    //finds the correct object in local storage and updates it if needed 
+    for (const obj of listObjects) {
+        if (obj.id === listItemId) {
+            updateIfNeeded(obj, formInputsObj);
+            break;
+        }
+    }
 
-    //store the updated arr
     localStorage.setItem(
         listItemsInLocalStorage,
-        JSON.stringify(arrFromLocalStorage),
-    );
-
-    //update list item in HTML
-    populateItem(objToUpdate, itemToUpdate.item);
-
-    //clears this variable so that another item the user wants to update can take it's place
-    itemToUpdate.item = null;
-
-    //update the list total
-    updateListTotal(priceDifferenceObj);
+        JSON.stringify(listObjects));
 }
 
+function updateIfNeeded(storedObj, { nameInput, descriptionInput, priceInput }) {
+
+    //update a property if its not the input the user typed in previously
+    if (storedObj.itemName !== nameInput) {
+        storedObj.itemName = nameInput;
+
+        //update HTML
+        const nameElem = itemToUpdate.item.
+            querySelector(".item-name");
+
+        nameElem.textContent = nameInput;
+    }
+
+    if (storedObj.description !== descriptionInput) {
+        storedObj.description = descriptionInput;
+
+        //update HTML
+        const descriptionElem = itemToUpdate.item.
+            querySelector(".description");
+        descriptionElem.textContent = descriptionInput;
+
+    }
+
+    if (storedObj.price !== priceInput) {
+        const { increase, decrease, newItemTotal } = calculateItemTotal(priceInput, storedObj);
+
+        const newListTotal = calculateListTotal(increase, decrease);
+
+        const priceElem = itemToUpdate.item.querySelector(".price");
+        const totalElem = document.querySelector("#total");
+
+        storedObj.price = priceInput;
+        storedObj.total = newItemTotal; //55
+
+        //update HTML
+        priceElem.textContent = priceInput;
+        totalElem.textContent = newItemTotal;
+
+        localStorage.setItem(
+            listTotalInLocalStorage,
+            JSON.stringify(newListTotal),
+        );
+    }
+}
 
 //calculate the difference between the former item's price and the new item's price
-function updateItemTotal(priceInput, obj) {
+function calculateItemTotal(priceInput, obj) {
     const formerItemTotal = obj.total; // e.g 60
-    const newTotal = priceInput * obj.quantity; //e.g 55*1
+    const newItemTotal = priceInput * obj.quantity; //e.g 55*1
 
     let increase;
     let decrease;
 
-    if (formerItemTotal < newTotal) {
-        increase = newTotal - formerItemTotal;
-    } else if (formerItemTotal > newTotal) {
-        decrease = formerItemTotal - newTotal; //5
+    if (newItemTotal > formerItemTotal) {
+        increase = newItemTotal - formerItemTotal;
+    } else if (newItemTotal < formerItemTotal) {
+        decrease = formerItemTotal - newItemTotal; //5
     }
 
-    return { increase, decrease, newTotal };
-
+    return { increase, decrease, newItemTotal };
 }
 
 
 //updates the list total in HTML and in local storage
-function updateListTotal({ increase, decrease }) {
+function calculateListTotal(increase, decrease) {
     let finalValue = null;
 
     const totalElem = getCurrentTotalElem();
@@ -434,12 +445,7 @@ function updateListTotal({ increase, decrease }) {
         finalValue = listTotal - decrease;
     }
 
-    totalElem.innerText = finalValue;
-
-    localStorage.setItem(
-        listTotalInLocalStorage,
-        JSON.stringify(finalValue),
-    );
+    return finalValue;
 }
 
 //!ud
@@ -520,7 +526,7 @@ export function clearForm() {
 }
 
 //update the list's total in the HTML and local storage
-export function updateTotal(listDataObj) {
+export function updateTotalPostDelete(listDataObj) {
     const currentListTotal = JSON.parse(
         localStorage.getItem(listTotalInLocalStorage),
     );

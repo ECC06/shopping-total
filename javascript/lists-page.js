@@ -80,7 +80,7 @@ listsCont.addEventListener("click", (e) => {
 
         storeLastOpened();
 
-        //updating the HTML with the date the day the user last opened the list (found in local storage)
+        //updating the HTML with the date the user last opened the list (found in local storage)
         lastOpenedElem.innerText = objDataFromLocalStorage.lastOpened;
 
         localStorage.setItem("list-id", listId); // Store the list id in local storage for use inside of the list

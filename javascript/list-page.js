@@ -84,8 +84,16 @@ backBtn.addEventListener("click", (e) => {
 //!READ lists items in local storage
 //if local storage is not empty, this handler fetches the array of items from local storage and displays it as HTML on the page
 document.addEventListener("DOMContentLoaded", (e) => {
+    h1.innerText = localStorage.getItem("list-name");
+
+    updateCurrencyOnPage();
+
+    setDefaultSelection();
+
+    changeCurrencyFont(); //changes the font of these signs: ₵ & ₦
+
     if (itemsArrFromLocalStorage().length > 0) {
-        h1.innerText = localStorage.getItem("list-name");
+        debugger;
 
         //sets the default currency selection based on the data in local storage
 
@@ -101,12 +109,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         toggle();
     }
-
-    updateCurrencyOnPage();
-
-    setDefaultSelection();
-
-    changeCurrencyFont(); //changes the font of these signs: ₵ & ₦
 });
 
 // !!RE-ORDER LIST ITEMS
@@ -357,12 +359,8 @@ deleteItemForm.addEventListener("submit", (e) => {
     } else {
 
         const objToDelete = itemsArrFromLocalStorage().find(
-            (obj) => obj.id === Number(listElemToDelete.id)
+            (obj) => obj.id === Number(liElemToDelete.id)
         );
-
-        console.log(objToDelete);
-        return;
-
 
         localStorage.setItem(
             listItemsInLocalStorage,

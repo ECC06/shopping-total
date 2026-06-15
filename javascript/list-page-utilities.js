@@ -32,7 +32,7 @@ export function changeCurrencyFont() {
         const innerSpan = span.querySelector(".currency-sign");
 
         if (innerSpan.innerText !== "₵") {
-            innerSpan.style.transform = `translate(0.5px, 3px)`;
+            innerSpan.style.transform = `translate(.0313rem, .1875rem)`;
         } else {
             innerSpan.removeAttribute("style");
         }
@@ -129,6 +129,7 @@ export function changeCurrency(event, dropdown) {
     }
 }
 
+//update all signs in the ui
 export function updateCurrencyOnPage() {
     const selectedCurrency = getSelectedCurrency();
     const liElemPrices = document.querySelectorAll(".price-cont");
@@ -136,7 +137,6 @@ export function updateCurrencyOnPage() {
 
     const currencySignsList = document.querySelectorAll(".currency-sign");
 
-    //update all signs in the ui
     currencySignsList.forEach((sign) => {
         if (selectedCurrency === "₵") {
 
@@ -537,6 +537,7 @@ export function updateTotalPostDelete(listDataObj) {
     getCurrentTotalElem().innerText = newTotal;
 }
 
+//filters out the item the user wants to delete, and remains the ones they want to keep
 export function remainingItems(liElem) {
     const listOfItems = itemsArrFromLocalStorage();
 
@@ -544,7 +545,6 @@ export function remainingItems(liElem) {
         (obj) => Number(liElem.id) === obj.id,
     );
 
-    //a list that filters out the item the user wants to delete, and remains the ones they want to keep
     const itemsToKeepInStorage = listOfItems.filter(
         (obj) => Number(liElem.id) !== obj.id,
     );

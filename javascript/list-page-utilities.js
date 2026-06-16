@@ -21,6 +21,7 @@ import {
     formSubmitter,
     mainDropdown,
     dialogDropdown,
+    removeCommas,
 } from "./list-page.js";
 
 import { addNewItemToLocalStorage } from "./shared.js";
@@ -286,9 +287,13 @@ export function createNewItem() {
 
     const totalElem = getCurrentTotalElem();
 
+    const priceInputConverted = Number(removeCommas(priceInputElem.value));
+
+    storeFormInput();
+
     //every time the user adds a new item, add it's original price to the current total of the list
     let currentTotal = Number(totalElem.innerText); //30
-    currentTotal += Number(priceInputElem.value); //30+20
+    currentTotal += priceInputConverted; //30+20
 
     //updates the list total in the local storage
     localStorage.setItem(listTotalInLocalStorage, currentTotal);
@@ -296,7 +301,6 @@ export function createNewItem() {
     //updates the list total in the HTML
     totalElem.innerText = currentTotal;
 
-    storeFormInput();
     addItemToHTML(itemObject);
 
     if (itemsArrFromLocalStorage().length === 1) {
@@ -453,14 +457,17 @@ function calculateListTotal(increase, decrease) {
 function storeFormInput() {
     //store item id
     const itemId = Math.floor(Math.random() * 90) + 10; //generates a number between 10 and 99 inclusive
+
+    const priceInputConverted = Number(removeCommas(priceInputElem.value));
+
     itemObject["id"] = itemId;
 
     itemObject["description"] = descrInputElem.value;
-    itemObject["price"] = Number(priceInputElem.value);
+    itemObject["price"] = priceInputConverted;
     itemObject["quantity"] = 1;
     itemObject["checked"] = false;
 
-    itemObject["total"] = Number(priceInputElem.value);
+    itemObject["total"] = priceInputConverted;
 
     addNewItemToLocalStorage(listItemsInLocalStorage, itemObject);
 }

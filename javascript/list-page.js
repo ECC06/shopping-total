@@ -53,6 +53,8 @@ export const addItemFormElements = Array.from(itemInfoForm.elements);
 export const [nameInputElem, descrInputElem, priceInputElem] =
     addItemFormElements;
 
+export const removeCommas = (stringWithCommas) => stringWithCommas.split(",").join(""); //"6,000" -> "6000"
+
 const deleteItemDialog = document.querySelector("#delete-item-dialog");
 const deleteItemForm = document.querySelector("#delete-item-form");
 const cancelDeleteItemBtn = document.querySelector("#cancel-delete-item-btn");

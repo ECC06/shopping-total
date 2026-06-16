@@ -17,7 +17,7 @@ import {
     closeDropdown,
     remainingItems,
     resetSignsOnPage,
-    validateBeforeUpdate,
+    updateInputs,
 } from "./list-page-utilities.js";
 
 
@@ -250,7 +250,7 @@ itemInfoForm.addEventListener("submit", (e) => {
     }
 
     if (e.submitter.id === "update-item-submitter") {
-        validateBeforeUpdate(formInputs);
+        updateInputs(formInputs);
 
         itemToUpdate.item = null;
 

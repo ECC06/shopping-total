@@ -350,7 +350,7 @@ export function putBackAddBtn() {
 }
 
 //check if user has previously updated
-export function validateBeforeUpdate(formInputsObj) {
+export function updateInputs(formInputsObj) {
 
     const listObjects = itemsArrFromLocalStorage();
 
@@ -405,7 +405,7 @@ function updateIfNeeded(storedObj, { nameInput, descriptionInput, priceInput }) 
 
         //update HTML
         priceElem.textContent = priceInput;
-        totalElem.textContent = newItemTotal;
+        totalElem.textContent = newListTotal;
 
         localStorage.setItem(
             listTotalInLocalStorage,

@@ -9,6 +9,7 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <script type="module" src="./javascript/list-page.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css">
+    <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
@@ -37,7 +38,7 @@
                         Price (<span class="currency-sign">ghc</span>)
                     </label>
                     <div class="input-and-dropdown">
-                        <input class="item-data-input" type="number" min="1" step="any" name="item-price-input"
+                        <input class="item-data-input" type="text" min="1" step="any" name="item-price-input"
                             id="item-price-input" required />
                         <div class="btn-and-dropdown">
                             <button class="dropdown-btn" type="button">
@@ -256,6 +257,9 @@
     </main>
     <!-- jsDelivr :: Sortable :: Latest (https://www.jsdelivr.com/package/npm/sortablejs) -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <!-- adds commas -->
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
 </body>
 
 </html>

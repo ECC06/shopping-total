@@ -93,7 +93,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
     changeCurrencyFont(); //changes the font of these signs: ₵ & ₦
 
     if (itemsArrFromLocalStorage().length > 0) {
-        debugger;
 
         //sets the default currency selection based on the data in local storage
 
@@ -215,6 +214,13 @@ cancelBtn.addEventListener("click", (e) => {
     closeDropdown(e);
     addItemsDialog.close();
 });
+
+//uses Cleave library to add commas to price inputs
+new Cleave("#item-price-input", {
+    numeral: true,
+    numeralThousandsGroupStyle: "thousand",
+});
+
 
 //handles the submission of list data, e.g the name, description, price, etc
 itemInfoForm.addEventListener("submit", (e) => {

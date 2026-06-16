@@ -1115,7 +1115,11 @@ main .dropdown-btn-text {
     .top-buttons {
         flex-direction: column;
         row-gap: 20px;
-        align-items: end;
+        align-items: start;
+    }
+
+    main .dropdown-btn {
+        margin-left: 4px;
     }
 
     .main-add-item-btn {

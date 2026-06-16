@@ -287,19 +287,19 @@ export function createNewItem() {
 
     const totalElem = getCurrentTotalElem();
 
-    const priceInputConverted = Number(removeCommas(priceInputElem.value));
+    const priceInputWithoutCommas = Number(removeCommas(priceInputElem.value));
 
     storeFormInput();
 
     //every time the user adds a new item, add it's original price to the current total of the list
     let currentTotal = Number(totalElem.innerText); //30
-    currentTotal += priceInputConverted; //30+20
+    currentTotal += priceInputWithoutCommas; //30+20
 
     //updates the list total in the local storage
     localStorage.setItem(listTotalInLocalStorage, currentTotal);
 
     //updates the list total in the HTML
-    totalElem.innerText = currentTotal;
+    totalElem.innerText = currentTotal.toLocaleString();
 
     addItemToHTML(itemObject);
 
@@ -337,7 +337,7 @@ export function displayUpdateForm(event) {
 
         nameInputElem.value = nameLabel.innerText;
         descrInputElem.value = descriptionElem.innerText;
-        priceInputElem.value = listItemInfoInLocalStorage.price;
+        priceInputElem.value = listItemInfoInLocalStorage.price.toLocaleString();
     }
 }
 
@@ -463,7 +463,10 @@ function storeFormInput() {
     itemObject["id"] = itemId;
 
     itemObject["description"] = descrInputElem.value;
+
+    itemObject["displayPrice"] = priceInputElem.value;
     itemObject["price"] = priceInputConverted;
+
     itemObject["quantity"] = 1;
     itemObject["checked"] = false;
 
@@ -506,7 +509,7 @@ export function populateItem(listItemObj, itemToPopulate) {
     itemName.innerText = listItemObj.itemName;
     descriptionElem.innerText = listItemObj.description;
 
-    priceElem.innerText = listItemObj.total;
+    priceElem.innerText = listItemObj.total.toLocaleString();
     quantityElem.innerText = listItemObj.quantity;
 
     return itemToPopulate;

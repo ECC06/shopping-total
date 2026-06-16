@@ -102,9 +102,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
             addItemToHTML(obj);
         });
 
-        getCurrentTotalElem().innerText = localStorage.getItem(
-            listTotalInLocalStorage,
-        ); //update the list total
+        const storedTotal = localStorage.getItem(listTotalInLocalStorage);
+
+
+        getCurrentTotalElem().innerText = Number(storedTotal).toLocaleString() //update the list total
 
         checkPreviouslyCheckedItems();
 

@@ -19,7 +19,7 @@ export const addListDialog = document.querySelector("#add-list-dialog");
 const addListBtn = document.querySelector("#add-list-btn");
 export const listsCont = document.querySelector("#lists-cont");
 
-const updateListNameDialog = document.querySelector("#update-name-dialog");
+const updateListNameDialog = document.querySelector("#update-list-name-dialog");
 const cancelChangeBtn = document.querySelector("#cancel-change-btn");
 const newNameInputElem = document.querySelector("#new-name-input");
 

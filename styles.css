@@ -58,22 +58,24 @@
 dialog {
     /* center all dialog boxes */
     width: min(90%, 1000px); /*width, max-width*/
-    padding: 28px;
     border-radius: 20px;
     border: none;
     position: relative;
     left: 50%;
     top: 50%;
     translate: -50% -50%;
+    overflow-y: scroll;
+    padding: 20px;
 }
 
-.add-items-dialog {
+.add-items-dialog:has(.opened) {
     overflow: visible;
 }
 
 .add-items-dialog,
 .delete-item-dialog {
-    min-height: 600px;
+    padding: 20px;
+    min-height: 580px;
 }
 
 dialog::backdrop {
@@ -98,7 +100,7 @@ main {
 /* align items vertically and center them both ways */
 .no-lists-cont,
 .add-list-form,
-.update-name-form,
+.update-list-name-form,
 .delete-list-form,
 .cancel-add-list-btn,
 .lists-header,
@@ -114,18 +116,11 @@ main {
 }
 
 .add-list-form,
-.update-name-form,
+.update-list-name-form,
 .delete-list-form,
 .delete-item-form {
-    width: 80%;
     gap: 36px;
     text-align: center;
-
-    /*centering this way because the parent (the dialog element) element can't use display flex or grid so as not to mess with native defaults  */
-    position: relative;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .new-list-img,
@@ -250,7 +245,7 @@ main {
 .delete-list-dialog,
 .delete-item-dialog {
     max-width: 1000px;
-    height: 630px;
+    min-height: 500px;
 }
 
 /* !SPECIFIC STYLES */
@@ -416,10 +411,10 @@ h1 {
     cursor: pointer;
 }
 
-.update-name-dialog {
+.update-list-name-dialog {
     top: 40%;
     max-width: 1000px;
-    height: 300px;
+    min-height: 200px;
 }
 
 .add-items-dialog article {
@@ -956,6 +951,10 @@ main .dropdown-btn-text {
         min-height: 800px;
     }
 
+    .add-items-dialog:has(.opened) {
+        overflow: scroll;
+    }
+
     .add-items-dialog article {
         translate: 0 0;
     }
@@ -1006,6 +1005,7 @@ main .dropdown-btn-text {
     .delete-list-buttons {
         flex-direction: column;
         width: 100%;
+        gap: 16px;
     }
 
     .header-content {

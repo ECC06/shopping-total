@@ -75,7 +75,7 @@ dialog {
 .add-items-dialog,
 .delete-item-dialog {
     padding: 20px;
-    min-height: 580px;
+    min-height: 450px;
 }
 
 dialog::backdrop {
@@ -412,7 +412,6 @@ h1 {
 }
 
 .update-list-name-dialog {
-    top: 40%;
     max-width: 1000px;
     min-height: 200px;
 }

@@ -292,7 +292,7 @@ export function createNewItem() {
     storeFormInput();
 
     //every time the user adds a new item, add it's original price to the current total of the list
-    let currentTotal = Number(totalElem.innerText); //30
+    let currentTotal = Number(removeCommas(totalElem.innerText)); //30
     currentTotal += priceInputWithoutCommas; //30+20
 
     //updates the list total in the local storage

@@ -195,8 +195,9 @@ export function manipulateQuantity(buttonElem) {
     const priceElem = listElem.querySelector(".price");
     const quantityElem = listElem.querySelector(".quantity");
 
-    const itemTotal = Number(priceElem.innerText);
-    let listTotal = Number(getCurrentTotalElem().innerText);
+    const itemTotal = Number(removeCommas(priceElem.innerText));
+    let listTotal = Number(removeCommas(getCurrentTotalElem().innerText));
+
 
     let newItemTotal = null;
     let updatedQuantityNum = null;
@@ -206,10 +207,10 @@ export function manipulateQuantity(buttonElem) {
 
     //update the price and quantity in HTML
     quantityElem.innerText = updatedQuantityNum;
-    priceElem.innerText = newItemTotal;
+    priceElem.innerText = newItemTotal.toLocaleString();
 
     //update the total in HTML
-    getCurrentTotalElem().innerText = listTotal;
+    getCurrentTotalElem().innerText = listTotal.toLocaleString();
 
     //update the price, quantity and total of the item in local storage
     updateVariablesInLocalStorage(
@@ -360,6 +361,7 @@ export function updateInputs(formInputsObj) {
 
     const listItemId = Number(itemToUpdate.item.id);
 
+    //todo: use the find method because what on earth
     //finds the correct object in local storage and updates it if needed 
     for (const obj of listObjects) {
         if (obj.id === listItemId) {
@@ -408,8 +410,8 @@ function updateIfNeeded(storedObj, { nameInput, descriptionInput, priceInput }) 
         storedObj.total = newItemTotal; //55
 
         //update HTML
-        priceElem.textContent = priceInput;
-        totalElem.textContent = newListTotal;
+        priceElem.textContent = newItemTotal.toLocaleString();
+        totalElem.textContent = newListTotal.toLocaleString();
 
         localStorage.setItem(
             listTotalInLocalStorage,
@@ -441,7 +443,7 @@ function calculateListTotal(increase, decrease) {
     let finalValue = null;
 
     const totalElem = getCurrentTotalElem();
-    const listTotal = Number(totalElem.innerText);
+    const listTotal = Number(removeCommas(totalElem.innerText));
 
     if (increase) {
         finalValue = listTotal + increase;

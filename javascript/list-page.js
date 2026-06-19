@@ -231,7 +231,7 @@ itemInfoForm.addEventListener("submit", (e) => {
 
     const nameInput = nameInputElem.value.trim();
     const descriptionInput = descrInputElem.value.trim();
-    const priceInput = Number(priceInputElem.value);
+    const priceInput = Number(removeCommas(priceInputElem.value));
 
     const formInputs = { nameInput, descriptionInput, priceInput };
 
